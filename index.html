@@ -3,708 +3,1664 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>北海道旅 2026 ルートマップ</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>北海道食べ歩き旅 2026</title>
 <style>
   :root {
     --primary: #1a3a5c;
     --accent: #e8a020;
-    --hakodate: #1565c0;
-    --chitose: #2e7d32;
+    --accent2: #2196F3;
+    --seafood: #e74c3c;
+    --meat: #8B4513;
+    --ramen: #FF6B35;
+    --curry: #FFB830;
+    --soft: #FF69B4;
+    --green: #27ae60;
     --bg: #f0f4f8;
-    --card: #fff;
-    --radius: 14px;
-    --shadow: 0 4px 20px rgba(0,0,0,0.12);
+    --card: #ffffff;
+    --text: #2c3e50;
+    --border: #dce3ec;
+    --shadow: 0 4px 20px rgba(0,0,0,0.10);
+    --radius: 16px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
-    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
-    background: var(--bg);
-    color: #2c3e50;
-    font-size: 15px;
+    font-family: 'Hiragino Kaku Gothic ProN','Meiryo',sans-serif;
+    background: var(--bg); color: var(--text);
+    font-size: 15px; line-height: 1.7; overflow-x: hidden;
   }
 
-  /* HEADER */
-  .header {
-    background: linear-gradient(135deg, #1a3a5c, #0d6efd);
-    color: #fff;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg,#1a3a5c 0%,#0d6efd 60%,#00c6ff 100%);
+    color:#fff; text-align:center; padding:48px 20px 36px;
+    position:relative; overflow:hidden;
   }
-  .header-title { font-size: clamp(16px, 4vw, 22px); font-weight: 900; }
-  .header-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-
-  /* PLAN TOGGLE */
-  .plan-toggle {
-    background: var(--primary);
-    padding: 12px 16px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
+  .hero::before {
+    content:''; position:absolute; inset:0;
+    background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
-  .plan-btn {
-    padding: 8px 20px;
-    border: 2px solid rgba(255,255,255,0.4);
-    border-radius: 30px;
-    background: transparent;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-  .plan-btn:hover { background: rgba(255,255,255,0.15); }
-  .plan-btn.active { background: var(--accent); border-color: var(--accent); }
-
-  /* MAP */
-  #map {
-    width: 100%;
-    height: 52vw;
-    min-height: 280px;
-    max-height: 500px;
+  .hero-title { font-size:clamp(22px,5vw,40px); font-weight:900; letter-spacing:.03em; position:relative; text-shadow:0 2px 12px rgba(0,0,0,.3); }
+  .hero-sub   { font-size:clamp(13px,3vw,18px); opacity:.9; margin-top:8px; position:relative; }
+  .hero-badges { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:20px; position:relative; }
+  .badge {
+    background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.35);
+    border-radius:20px; padding:5px 14px; font-size:13px; font-weight:700; backdrop-filter:blur(6px);
   }
 
-  /* CONTROLS */
-  .controls {
-    background: var(--card);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid #dce3ec;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  /* ===== MAP BUTTON ===== */
+  .map-btn-wrap { margin-top:22px; position:relative; }
+  .map-open-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,0.92); color:var(--primary);
+    border:none; border-radius:30px; padding:12px 28px;
+    font-size:15px; font-weight:900; cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.2); transition:all .2s;
+    font-family:inherit; text-decoration:none;
   }
-  .ctrl-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: inherit;
-    transition: all 0.2s;
-    flex-shrink: 0;
+  .map-open-btn:hover { background:#fff; transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.25); }
+  .pulse {
+    display:inline-block; width:10px; height:10px;
+    background:#e74c3c; border-radius:50%; animation:pulse 1.4s infinite;
   }
-  .ctrl-btn.play  { background: #27ae60; color: #fff; }
-  .ctrl-btn.pause { background: var(--accent); color: #fff; }
-  .ctrl-btn.reset { background: #e74c3c; color: #fff; }
-  .ctrl-btn:hover { transform: scale(1.1); }
-  .progress-wrap {
-    flex: 1;
-    min-width: 120px;
-  }
-  .progress-bar-bg {
-    background: #dce3ec;
-    border-radius: 8px;
-    height: 8px;
-    overflow: hidden;
-    cursor: pointer;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), #ff6b35);
-    border-radius: 8px;
-    width: 0%;
-    transition: width 0.15s linear;
-  }
-  .speed-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
-  .speed-select {
-    border: 1px solid #dce3ec;
-    border-radius: 8px;
-    padding: 4px 8px;
-    font-size: 12px;
-    font-family: inherit;
-    background: var(--bg);
-  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.5);opacity:.6} }
 
-  /* CURRENT SPOT */
-  .current-spot {
-    background: var(--card);
-    padding: 12px 16px;
-    border-bottom: 1px solid #dce3ec;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  /* ===== MAP MODAL ===== */
+  .map-modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.72); z-index:1000;
+    align-items:center; justify-content:center; padding:16px;
   }
-  .spot-icon { font-size: 24px; flex-shrink: 0; }
-  .spot-info { flex: 1; }
-  .spot-name { font-size: 15px; font-weight: 900; }
-  .spot-desc { font-size: 12px; color: #666; margin-top: 2px; }
-  .spot-day-badge {
-    background: var(--primary);
-    color: #fff;
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    flex-shrink: 0;
+  .map-modal-overlay.open { display:flex; }
+  .map-modal {
+    background:#fff; border-radius:20px; width:100%;
+    max-width:900px; max-height:92vh; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+    animation:modalIn .3s ease;
   }
+  @keyframes modalIn { from{transform:scale(.9) translateY(20px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+  .map-modal-header {
+    background:var(--primary); color:#fff; padding:14px 20px;
+    display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+  }
+  .map-modal-header h3 { font-size:16px; font-weight:900; }
+  .map-modal-tabs { display:flex; gap:6px; }
+  .map-tab-btn {
+    padding:5px 14px; border:2px solid rgba(255,255,255,.4);
+    border-radius:20px; background:transparent; color:#fff;
+    font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s;
+  }
+  .map-tab-btn.active { background:var(--accent); border-color:var(--accent); }
+  .map-close-btn {
+    background:rgba(255,255,255,.2); border:none; color:#fff;
+    width:32px; height:32px; border-radius:50%; font-size:18px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    font-family:inherit; transition:background .2s; flex-shrink:0;
+  }
+  .map-close-btn:hover { background:rgba(255,255,255,.35); }
+  .map-modal-body { flex:1; overflow:hidden; position:relative; }
+  #map-container {
+    width:100%; height:100%; min-height:460px;
+  }
+  .map-modal-footer {
+    padding:10px 16px; background:var(--bg);
+    border-top:1px solid var(--border);
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex-shrink:0;
+  }
+  .map-modal-footer span { font-size:11px; color:#666; flex:1; }
+  .map-ctrl-bar {
+    display:flex; gap:6px; align-items:center;
+  }
+  .map-ctrl-btn {
+    padding:6px 14px; border:none; border-radius:20px;
+    font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .2s;
+  }
+  .map-ctrl-btn.play  { background:var(--green); color:#fff; }
+  .map-ctrl-btn.pause { background:var(--accent); color:#fff; }
+  .map-ctrl-btn.reset { background:#7f8c8d; color:#fff; }
+  .map-ctrl-btn:hover { opacity:.85; }
 
-  /* TIMELINE LIST */
-  .stops-wrap {
-    padding: 14px 16px;
-    overflow-x: auto;
+  /* ===== MEMBERS ===== */
+  .members-bar {
+    background:#fff; border-bottom:2px solid var(--border);
+    padding:14px 20px; display:flex; flex-wrap:wrap;
+    gap:12px; justify-content:center; align-items:center;
   }
-  .stops-scroll {
-    display: flex;
-    gap: 0;
-    align-items: center;
-    min-width: max-content;
-    padding-bottom: 4px;
+  .member-chip {
+    display:flex; align-items:center; gap:8px;
+    background:var(--bg); border-radius:30px; padding:8px 16px;
+    font-weight:700; font-size:14px; border:2px solid var(--border);
   }
-  .stop-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    padding: 0 4px;
-    position: relative;
-  }
-  .stop-item:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: -18px;
-    top: 16px;
-    width: 36px;
-    height: 2px;
-    background: #dce3ec;
-    z-index: 0;
-  }
-  .stop-dot {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #dce3ec;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    border: 3px solid #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: all 0.2s;
-    position: relative;
-    z-index: 1;
-  }
-  .stop-item.active .stop-dot {
-    background: var(--accent);
-    transform: scale(1.25);
-    box-shadow: 0 0 0 4px rgba(232,160,32,0.3);
-  }
-  .stop-item.visited .stop-dot { background: #27ae60; }
-  .stop-label {
-    font-size: 10px;
-    font-weight: 700;
-    margin-top: 4px;
-    text-align: center;
-    color: #666;
-    max-width: 60px;
-    line-height: 1.2;
-  }
-  .stop-item.active .stop-label { color: var(--accent); }
-  .stop-item.visited .stop-label { color: #27ae60; }
+  .member-chip .icon { font-size:20px; }
+  .member-chip small { font-weight:400; color:#666; font-size:12px; display:block; margin-top:1px; }
 
-  /* DAY SEPARATOR */
-  .day-sep {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 6px;
+  /* ===== TOGGLE ===== */
+  .plan-toggle-wrap {
+    background:var(--primary); padding:20px;
+    text-align:center; position:sticky; top:0; z-index:100;
   }
-  .day-sep-line {
-    width: 2px;
-    height: 30px;
-    background: linear-gradient(to bottom, #dce3ec, #bbb);
-    margin-bottom: 2px;
+  .plan-toggle-wrap h2 { color:#fff; font-size:clamp(14px,3vw,18px); margin-bottom:12px; }
+  .toggle-btns { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  .toggle-btn {
+    padding:10px 24px; border:2px solid rgba(255,255,255,.5);
+    border-radius:30px; background:transparent; color:#fff;
+    font-size:14px; font-weight:700; cursor:pointer; transition:all .25s; font-family:inherit;
   }
-  .day-sep-label {
-    font-size: 9px;
-    font-weight: 700;
-    color: #999;
-    white-space: nowrap;
-    transform: rotate(-60deg);
-    transform-origin: center;
-    margin-top: 6px;
-  }
+  .toggle-btn:hover { background:rgba(255,255,255,.15); }
+  .toggle-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
 
-  /* INFO PANELS */
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 12px 16px 20px;
-  }
-  .info-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 14px;
-    box-shadow: var(--shadow);
-    border-top: 4px solid var(--accent);
-  }
-  .info-card h4 {
-    font-size: 13px;
-    font-weight: 900;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .info-card ul { list-style: none; font-size: 12px; }
-  .info-card ul li {
-    padding: 5px 0;
-    border-bottom: 1px solid #f0f4f8;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .info-card ul li:last-child { border-bottom: none; }
-  .info-card ul li span:last-child { font-weight: 700; color: var(--primary); text-align: right; }
+  /* ===== MAIN ===== */
+  .main-wrap { max-width:1100px; margin:0 auto; padding:0 12px 40px; }
 
-  @media (max-width: 480px) {
-    .info-grid { grid-template-columns: 1fr; }
-    #map { height: 60vw; min-height: 240px; }
+  /* ===== ALERT BOX ===== */
+  .plan-alert {
+    background:#fff8e1; border:2px solid #ffcc02; border-radius:12px;
+    padding:14px 16px; margin:14px 0; font-size:13px; line-height:1.7;
+    display:flex; gap:10px; align-items:flex-start;
   }
+  .plan-alert .alert-icon { font-size:20px; flex-shrink:0; }
+  .plan-alert strong { color:#b8860b; display:block; margin-bottom:3px; }
+
+  /* ===== FLIGHT PANEL ===== */
+  .flight-panel {
+    background:var(--card); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin:16px 0;
+    border-top:5px solid var(--accent);
+  }
+  .flight-panel h3 { font-size:16px; font-weight:900; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+  .flight-compare { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .flight-col { background:var(--bg); border-radius:12px; padding:14px; border:2px solid var(--border); }
+  .flight-col h4 { font-size:13px; font-weight:900; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid var(--border); }
+  .flight-col.hakodate { border-color:#1565c0; }
+  .flight-col.chitose  { border-color:#1b5e20; }
+  .flight-col h4.hakodate { color:#1565c0; }
+  .flight-col h4.chitose  { color:#1b5e20; }
+  .flight-item { background:#fff; border-radius:10px; padding:10px 12px; margin-bottom:8px; border:1px solid var(--border); }
+  .flight-item .name   { font-weight:700; font-size:13px; margin-bottom:4px; }
+  .flight-item .detail { font-size:12px; color:#555; line-height:1.5; }
+  .flight-item .price  { font-weight:900; color:var(--accent); font-size:14px; margin-top:4px; }
+
+  /* ===== PLAN SECTIONS ===== */
+  .plan-section { display:none; }
+  .plan-section.active { display:block; }
+  .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+
+  /* ===== DAY CARD ===== */
+  .day-card {
+    background:var(--card); border-radius:var(--radius);
+    box-shadow:var(--shadow); margin-bottom:20px;
+    overflow:hidden; border:1px solid var(--border);
+  }
+  .day-header {
+    padding:16px 20px; display:flex; align-items:center;
+    gap:12px; cursor:pointer; user-select:none;
+  }
+  .day-number {
+    background:var(--primary); color:#fff; border-radius:50%;
+    width:44px; height:44px; display:flex; align-items:center;
+    justify-content:center; font-size:16px; font-weight:900; flex-shrink:0;
+  }
+  .day-title-area { flex:1; min-width:0; }
+  .day-title { font-size:clamp(14px,2.5vw,17px); font-weight:900; }
+  .day-sub   { font-size:12px; color:#666; margin-top:2px; }
+  .day-arrow { font-size:18px; color:#999; transition:transform .3s; flex-shrink:0; }
+  .day-card.open .day-arrow { transform:rotate(180deg); }
+  .day-body { display:none; padding:0 16px 16px; border-top:1px solid var(--border); }
+  .day-card.open .day-body { display:block; }
+
+  /* ===== DRIVE BADGE ===== */
+  .drive-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    background:#f0f4f8; border:1px solid var(--border);
+    border-radius:8px; padding:6px 12px; font-size:12px;
+    font-weight:700; color:#555; margin:8px 0;
+  }
+  .drive-badge.long { background:#fff3e0; border-color:#ffb74d; color:#e65100; }
+  .drive-badge.short{ background:#e8f5e9; border-color:#81c784; color:#2e7d32; }
+
+  /* ===== TIMELINE ===== */
+  .timeline { margin-top:14px; }
+  .tl-item {
+    display:grid; grid-template-columns:80px 1fr;
+    gap:0 12px; margin-bottom:14px; position:relative;
+  }
+  .tl-item::before {
+    content:''; position:absolute; left:80px; top:0; bottom:-14px;
+    width:2px; background:var(--border); transform:translateX(-50%);
+  }
+  .tl-item:last-child::before { display:none; }
+  .tl-time { font-size:12px; font-weight:700; color:var(--primary); text-align:right; padding-top:2px; padding-right:8px; }
+  .tl-content { background:var(--bg); border-radius:12px; padding:10px 12px; position:relative; margin-left:8px; }
+  .tl-content::before {
+    content:''; position:absolute; left:-6px; top:10px;
+    width:10px; height:10px; background:var(--accent); border-radius:50%;
+    border:2px solid #fff; box-shadow:0 0 0 2px var(--accent);
+  }
+  .tl-label {
+    display:inline-block; font-size:11px; font-weight:700;
+    border-radius:6px; padding:2px 8px; margin-bottom:4px; color:#fff;
+  }
+  .tl-label.seafood    { background:var(--seafood); }
+  .tl-label.meat       { background:var(--meat); }
+  .tl-label.ramen      { background:var(--ramen); }
+  .tl-label.curry      { background:var(--curry); color:#333; }
+  .tl-label.soft       { background:var(--soft); }
+  .tl-label.sightseeing{ background:var(--green); }
+  .tl-label.move       { background:#7f8c8d; }
+  .tl-label.rest       { background:#9b59b6; }
+  .tl-label.note       { background:#9b59b6; }
+  .tl-main  { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .tl-desc  { font-size:12px; color:#555; line-height:1.5; }
+  .tl-links { margin-top:6px; display:flex; flex-wrap:wrap; gap:4px; }
+  .tl-link {
+    font-size:11px; background:var(--primary); color:#fff;
+    border-radius:6px; padding:3px 8px; text-decoration:none;
+    font-weight:700; display:inline-block;
+  }
+  .tl-link:hover { background:var(--accent); }
+
+  /* ===== HOTEL ===== */
+  .hotel-section {
+    background:linear-gradient(135deg,#f8f9ff,#e8f4fd);
+    border-radius:12px; padding:14px; margin-top:14px; border:1px solid #c8d8f0;
+  }
+  .hotel-section h4 { font-size:14px; font-weight:900; margin-bottom:10px; color:var(--primary); display:flex; align-items:center; gap:6px; }
+  .hotel-list { display:flex; flex-direction:column; gap:8px; }
+  .hotel-item { background:#fff; border-radius:10px; padding:10px 12px; border:1px solid var(--border); display:flex; align-items:flex-start; gap:10px; }
+  .hotel-star { font-size:20px; flex-shrink:0; }
+  .hotel-info { flex:1; min-width:0; }
+  .hotel-name  { font-size:13px; font-weight:900; }
+  .hotel-price { font-size:13px; color:var(--seafood); font-weight:700; margin:2px 0; }
+  .hotel-desc  { font-size:11px; color:#666; line-height:1.4; }
+  .hotel-rec { background:var(--accent); color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin-left:6px; }
+
+  /* ===== COLOR THEMES ===== */
+  .hakodate .day-header { background:linear-gradient(135deg,#e3f0ff,#f5f9ff); }
+  .hakodate .day-number { background:#1565c0; }
+  .chitose  .day-header { background:linear-gradient(135deg,#e8f5e9,#f1fff2); }
+  .chitose  .day-number { background:#2e7d32; }
+
+  /* ===== TIPS ===== */
+  .tips-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; margin-top:20px; border-top:5px solid var(--green); }
+  .tips-card h3 { font-size:16px; font-weight:900; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+  .tips-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+  .tip-item { background:var(--bg); border-radius:10px; padding:12px; font-size:13px; border-left:3px solid var(--green); }
+  .tip-item strong { display:block; font-size:12px; color:var(--green); margin-bottom:4px; }
+
+  /* ===== LEGEND ===== */
+  .legend { display:flex; flex-wrap:wrap; gap:8px; padding:14px 16px; background:#fff; border-radius:12px; margin:12px 0; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; }
+  .legend-dot  { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+
+  /* ===== SUMMARY ===== */
+  .plan-summary { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; margin:16px 0; }
+  .plan-summary h3 { font-size:15px; font-weight:900; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+  .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .summary-col { background:var(--bg); border-radius:12px; padding:14px; }
+  .summary-col h4 { font-size:14px; font-weight:900; margin-bottom:10px; }
+  .summary-col h4.h { color:#1565c0; }
+  .summary-col h4.c { color:#2e7d32; }
+  .summary-col ul { list-style:none; font-size:13px; }
+  .summary-col ul li { padding:4px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; }
+  .summary-col ul li:last-child { border-bottom:none; }
+  .verdict { background:linear-gradient(135deg,#fff9e6,#fffbf0); border:2px solid var(--accent); border-radius:12px; padding:14px; margin-top:12px; font-size:13px; line-height:1.7; }
+  .verdict strong { color:var(--accent); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:640px) {
+    .compare-grid   { grid-template-columns:1fr; }
+    .flight-compare { grid-template-columns:1fr; }
+    .summary-grid   { grid-template-columns:1fr; }
+    .plan-toggle-wrap { padding:14px; }
+    .toggle-btn { padding:8px 16px; font-size:13px; }
+    .map-modal-tabs { display:none; }
+  }
+  html { scroll-behavior:smooth; }
+
+  /* ===== FOOTER ===== */
+  .footer { background:var(--primary); color:rgba(255,255,255,.7); text-align:center; padding:20px; font-size:12px; margin-top:20px; }
 </style>
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div>
-    <div class="header-title">🗺️ 北海道旅 2026 ルートマップ</div>
-    <div class="header-sub">7月24日〜27日　3泊4日　レンタカー旅のルートを地図で確認</div>
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-title">🦀 北海道食べ歩き旅 2026</div>
+  <div class="hero-sub">2026年7月24日(金)〜27日(月)　3泊4日</div>
+  <div class="hero-badges">
+    <span class="badge">🍣 海鮮三昧</span>
+    <span class="badge">🦔 積丹ウニ</span>
+    <span class="badge">🥩 ジンギスカン</span>
+    <span class="badge">🍜 ラーメン横丁</span>
+    <span class="badge">🍛 スープカレー</span>
+    <span class="badge">🍦 ソフトクリーム</span>
+    <span class="badge">🏯 五稜郭</span>
+    <span class="badge">🚗 レンタカー旅</span>
+  </div>
+  <div class="map-btn-wrap">
+    <button class="map-open-btn" onclick="openMap()">
+      <span class="pulse"></span>
+      🗺️ ルートマップをアニメーションで見る
+    </button>
   </div>
 </div>
 
-<!-- PLAN TOGGLE -->
-<div class="plan-toggle">
-  <button class="plan-btn active" onclick="switchPlan('hakodate')">✈️ 函館IN/OUTプラン</button>
-  <button class="plan-btn" onclick="switchPlan('chitose')">✈️ 新千歳IN/OUTプラン</button>
-</div>
-
-<!-- MAP -->
-<div id="map"></div>
-
-<!-- CONTROLS -->
-<div class="controls">
-  <button class="ctrl-btn play"  onclick="playAnimation()"  title="再生">▶</button>
-  <button class="ctrl-btn pause" onclick="pauseAnimation()" title="一時停止">⏸</button>
-  <button class="ctrl-btn reset" onclick="resetAnimation()" title="最初に戻す">⏮</button>
-  <div class="progress-wrap">
-    <div style="font-size:11px;color:#666;margin-bottom:4px;" id="progress-label">スタート地点</div>
-    <div class="progress-bar-bg" onclick="seekByClick(event)" id="progress-bg">
-      <div class="progress-bar-fill" id="progress-fill"></div>
+<!-- ===== MAP MODAL ===== -->
+<div class="map-modal-overlay" id="map-overlay" onclick="overlayClick(event)">
+  <div class="map-modal">
+    <div class="map-modal-header">
+      <h3>🗺️ 北海道ルートマップ</h3>
+      <div class="map-modal-tabs">
+        <button class="map-tab-btn active" onclick="switchMapPlan('hakodate',this)">✈️ 函館プラン</button>
+        <button class="map-tab-btn" onclick="switchMapPlan('chitose',this)">✈️ 千歳プラン</button>
+      </div>
+      <button class="map-close-btn" onclick="closeMap()">✕</button>
+    </div>
+    <div class="map-modal-body">
+      <div id="map-container"></div>
+    </div>
+    <div class="map-modal-footer">
+      <span id="map-spot-label">📍 ▶ で飛行機が動き出す！各ピンをタップで詳細表示</span>
+      <div class="map-ctrl-bar">
+        <button class="map-ctrl-btn play"  onclick="mapPlay()">▶ 再生</button>
+        <button class="map-ctrl-btn pause" onclick="mapPause()">⏸ 停止</button>
+        <button class="map-ctrl-btn reset" onclick="mapReset()">⏮ リセット</button>
+      </div>
     </div>
   </div>
-  <div class="speed-wrap">
-    <span>速度</span>
-    <select class="speed-select" id="speed-select" onchange="setSpeed(this.value)">
-      <option value="1">×1</option>
-      <option value="2" selected>×2</option>
-      <option value="4">×4</option>
-      <option value="8">×8</option>
-    </select>
+</div>
+
+<!-- ===== MEMBERS ===== -->
+<div class="members-bar">
+  <div class="member-chip"><span class="icon">✈️</span><div><div>梅村 亮平</div><small>神奈川 / 羽田発</small></div></div>
+  <div style="font-size:20px;color:#ccc;">＋</div>
+  <div class="member-chip"><span class="icon">✈️</span><div><div>市澤 整</div><small>名古屋 / 中部発</small></div></div>
+</div>
+
+<!-- ===== TOGGLE ===== -->
+<div class="plan-toggle-wrap">
+  <h2>🗺️ 出発地別プラン比較</h2>
+  <div class="toggle-btns">
+    <button class="toggle-btn active" onclick="showPlan('hakodate-plan')">✈️ 函館IN/OUTプラン</button>
+    <button class="toggle-btn" onclick="showPlan('chitose-plan')">✈️ 新千歳IN/OUTプラン</button>
+    <button class="toggle-btn" onclick="showPlan('compare')">⚖️ 両プランを比較</button>
   </div>
 </div>
 
-<!-- CURRENT SPOT -->
-<div class="current-spot">
-  <div class="spot-icon" id="spot-icon">✈️</div>
-  <div class="spot-info">
-    <div class="spot-name" id="spot-name">出発地点を選択してください</div>
-    <div class="spot-desc" id="spot-desc">▶ ボタンでアニメーション開始</div>
+<!-- ===== MAIN ===== -->
+<div class="main-wrap">
+
+  <!-- 移動疲れ注意アラート -->
+  <div class="plan-alert">
+    <span class="alert-icon">🚗</span>
+    <div>
+      <strong>移動疲れ軽減プランに見直し済み</strong>
+      函館プランは「函館2泊」に変更し、積丹は日帰りドライブに。新千歳プランは「小樽ベース」で移動距離を短縮。長距離移動は1日1回まで、午後は各エリアでゆったり過ごせる設計にしています。
+    </div>
   </div>
-  <div class="spot-day-badge" id="spot-day">Day -</div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--seafood)"></div>海鮮</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--meat)"></div>ジンギスカン</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ramen)"></div>ラーメン</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--curry)"></div>スープカレー</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--soft)"></div>ソフトクリーム</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>観光</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9b59b6)"></div>休憩</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7f8c8d"></div>移動</div>
+  </div>
+
+  <!-- FLIGHT -->
+  <div class="flight-panel">
+    <h3>✈️ フライト情報（両プラン）</h3>
+    <div class="flight-compare">
+      <div class="flight-col hakodate">
+        <h4 class="hakodate">梅村（羽田発）</h4>
+        <div class="flight-item">
+          <div class="name">🔵 函館プラン</div>
+          <div class="detail">羽田 → 函館　約1時間25分｜AirDo / JAL / ANA</div>
+          <div class="price">往復 ¥18,000〜</div>
+        </div>
+        <div class="flight-item">
+          <div class="name">🟢 千歳プラン</div>
+          <div class="detail">羽田 → 新千歳　約1時間35分｜Peach / AirDo</div>
+          <div class="price">往復 ¥9,000〜（LCC最安）</div>
+        </div>
+      </div>
+      <div class="flight-col chitose">
+        <h4 class="chitose">市澤（中部発）</h4>
+        <div class="flight-item">
+          <div class="name">🔵 函館プラン</div>
+          <div class="detail">中部 → 函館　約1時間30分｜AirDo / ANA</div>
+          <div class="price">往復 ¥23,000〜</div>
+        </div>
+        <div class="flight-item">
+          <div class="name">🟢 千歳プラン</div>
+          <div class="detail">中部 → 新千歳　約1時間40分｜Peach / AirDo</div>
+          <div class="price">往復 ¥12,000〜（LCC最安）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 函館プラン ========== -->
+  <div class="plan-section active" id="hakodate-plan">
+    <div style="background:#1565c0;color:#fff;border-radius:12px;padding:14px 20px;margin-bottom:8px;font-weight:900;font-size:16px;">
+      ✈️ 函館IN/OUTプラン　―　函館2泊＋札幌1泊
+    </div>
+    <div class="plan-alert" style="margin-top:0;">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong>移動疲れ対策：函館を拠点に据えた設計</strong>
+        Day1・2は函館泊で連泊することで荷ほどきの手間ゼロ。積丹は日帰りドライブで往復し、疲れたらそのまま函館に戻るだけ。Day3の小樽→札幌移動は40分と超楽。
+      </div>
+    </div>
+
+    <!-- DAY 1 -->
+    <div class="day-card hakodate open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">1</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 1（7/24 金）　函館　ゆったり入り</div>
+          <div class="day-sub">空港集合 → 朝市ランチ → 五稜郭 → ジンギスカン → 夜景</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge short">🚗 この日の最長移動：空港→市内 約15分</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">08:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">函館空港集合・レンタカーピックアップ</div>
+              <div class="tl-desc">梅村：羽田→函館 約1h25m｜市澤：中部→函館 約1h30m。空港で合流→レンタカー受け取り→市内へ（約15分）。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.tabirai.net/s/car/hokkaido/hakodate_airport/" target="_blank">レンタカー比較</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">10:30</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦑 海鮮</span>
+              <div class="tl-main">函館朝市　どんぶり横丁でランチ</div>
+              <div class="tl-desc">活イカ釣り体験＋元祖巴丼（¥3,278）。イクラ・ウニ・カニの贅沢セット。混み始める前に早めに入るのが吉。</div>
+              <div class="tl-links">
+                <a class="tl-link" href="https://www.hakodate-asaichi.com/" target="_blank">朝市公式</a>
+                <a class="tl-link" href="https://donburiyokocho.com/" target="_blank">どんぶり横丁</a>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">13:00</div>
+            <div class="tl-content">
+              <span class="tl-label rest">☕ 休憩</span>
+              <div class="tl-main">ホテルチェックイン＆荷物を置いて身軽に</div>
+              <div class="tl-desc">函館駅周辺のホテルに早めチェックイン（交渉次第）。荷物を置いてから観光に出発。午後はゆったりペースで。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">14:30</div>
+            <div class="tl-content">
+              <span class="tl-label sightseeing">🏯 観光</span>
+              <div class="tl-main">五稜郭タワー見学</div>
+              <div class="tl-desc">107mの展望台から星型要塞を一望。約1時間のゆったり見学。タワー内のカフェで休憩も◎。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.goryokaku-tower.co.jp/" target="_blank">五稜郭タワー公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">16:00</div>
+            <div class="tl-content">
+              <span class="tl-label soft">🍦 ソフト</span>
+              <div class="tl-main">五稜郭周辺でソフトクリーム散策</div>
+              <div class="tl-desc">地元牧場系のソフトが充実。ミルク系・夕張メロン系など食べ歩き。ゆるっとぶらぶら。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">18:00</div>
+            <div class="tl-content">
+              <span class="tl-label meat">🥩 ジンギスカン</span>
+              <div class="tl-main">函館ジンギスカン　初日の夕食</div>
+              <div class="tl-desc">大門横丁付近でラム肉をガッツリ。ビールとジンギスカンで男旅の乾杯！初日の夜はここで盛り上がろう。</div>
+              <div class="tl-links">
+                <a class="tl-link" href="https://maps.google.com/?q=函館+ジンギスカン" target="_blank">Googleマップ</a>
+                <a class="tl-link" href="https://tabiiro.jp/gourmet/article/hakodate-kaisenizakaya/" target="_blank">函館グルメ情報</a>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">20:00</div>
+            <div class="tl-content">
+              <span class="tl-label sightseeing">🌃 観光</span>
+              <div class="tl-main">函館山ロープウェイ　夜景</div>
+              <div class="tl-desc">「世界三大夜景」。ジンギスカンの後は腹ごなしも兼ねて夜景を堪能。ホテルまで近いので疲れたらすぐ戻れる安心感。</div>
+              <div class="tl-links"><a class="tl-link" href="https://334.co.jp/" target="_blank">ロープウェイ公式</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-section">
+          <h4>🏨 宿泊候補（函館エリア・2泊連泊）</h4>
+          <div class="hotel-list">
+            <div class="hotel-item">
+              <div class="hotel-star">⭐</div>
+              <div class="hotel-info">
+                <div class="hotel-name">JRイン函館 <span class="hotel-rec">コスパ推し</span></div>
+                <div class="hotel-price">¥8,000〜13,000/人</div>
+                <div class="hotel-desc">駅直結・朝市まで徒歩1分。2泊連泊で荷物移動ゼロ。大浴場あり。</div>
+              </div>
+            </div>
+            <div class="hotel-item">
+              <div class="hotel-star">🏆</div>
+              <div class="hotel-info">
+                <div class="hotel-name">センチュリーマリーナ函館</div>
+                <div class="hotel-price">¥15,000〜25,000/人</div>
+                <div class="hotel-desc">港ビュー。海鮮朝食バイキングが絶品。2泊してゆったり楽しむのに最適。</div>
+              </div>
+            </div>
+            <div class="hotel-item">
+              <div class="hotel-star">🥂</div>
+              <div class="hotel-info">
+                <div class="hotel-name">HAKODATE男爵倶楽部</div>
+                <div class="hotel-price">¥10,000〜18,000/人</div>
+                <div class="hotel-desc">五稜郭・湯の川温泉近く。積丹から帰って温泉でリフレッシュ。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day-card hakodate open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">2</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 2（7/25 土）　積丹ウニ日帰りドライブ</div>
+          <div class="day-sub">函館泊 → 積丹ウニ → 中村屋 → 函館に戻る → 塩ラーメン</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge long">🚗 函館↔積丹：片道約3h　※早出・早帰りで疲れ最小化</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">06:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">函館 → 積丹　早朝ドライブ出発</div>
+              <div class="tl-desc">朝6:30出発で渋滞なし快適ドライブ。日本海沿いを北上する絶景ルート。8:30頃に積丹みさき着を目標に。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">09:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦔 海鮮</span>
+              <div class="tl-main">お食事処みさき　赤バフンウニ丼</div>
+              <div class="tl-desc">積丹で最も有名なウニ丼の聖地。赤バフンウニの濃厚な甘みは別格。9:00開店、8:30着で並ぼう！</div>
+              <div class="tl-links"><a class="tl-link" href="https://osyokujidokoromisaki.com/" target="_blank">みさき公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">11:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦔 海鮮</span>
+              <div class="tl-main">中村屋　バフン＆ムラサキウニ食べ比べ</div>
+              <div class="tl-desc">バフンとムラサキ両方の食べ比べセット。赤と白の違いを舌で感じよう。この2店で積丹ウニは完璧。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.nakamuraya.co/" target="_blank">中村屋公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">12:00</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🌊 休憩</span>
+              <div class="tl-main">シャコタンブルーの海を眺めながら一息</div>
+              <div class="tl-desc">積丹の透明な青い海は必見。神威岬の駐車場や展望スポットでのんびり過ごす。急がなくていい！</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">13:00</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">積丹 → 函館　約3時間で帰還</div>
+              <div class="tl-desc">午後は帰り道。高速を使って16時頃には函館に戻れる。ホテルで少し休んでから夕食へ。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">16:30</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🛁 休憩</span>
+              <div class="tl-main">ホテルに戻って一風呂＆仮眠</div>
+              <div class="tl-desc">長距離ドライブ後は大浴場で足を伸ばしてリフレッシュ。30分仮眠するだけで夕食への体力が全然違う。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">18:30</div>
+            <div class="tl-content">
+              <span class="tl-label ramen">🍜 ラーメン</span>
+              <div class="tl-main">函館塩ラーメン　麺厨房あじさい</div>
+              <div class="tl-desc">疲れた夜にぴったりな澄んだ塩スープ。あっさりしているので胃に優しい。函館市内に複数店舗あり。</div>
+              <div class="tl-links"><a class="tl-link" href="https://ajisai.tv/" target="_blank">あじさい公式</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-section">
+          <h4>🏨 宿泊（函館・連泊2泊目）</h4>
+          <div class="hotel-list">
+            <div class="hotel-item">
+              <div class="hotel-star">✅</div>
+              <div class="hotel-info">
+                <div class="hotel-name">Day 1と同じホテルに連泊 <span class="hotel-rec">移動ゼロ</span></div>
+                <div class="hotel-price">－</div>
+                <div class="hotel-desc">荷物移動なし。長距離ドライブ後にそのままホテルに帰れる最高の安心感。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="day-card hakodate open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">3</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 3（7/26 日）　小樽 → 札幌　食べ歩きday</div>
+          <div class="day-sub">三角市場 → かま栄 → LeTAO → 運河 → スープカレー → ラーメン横丁</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge short">🚗 函館→小樽：約2.5h　小樽→札幌：約40分　合計移動は午前中のみ</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">07:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">函館 → 小樽　約2時間30分</div>
+              <div class="tl-desc">朝7:30出発→10時頃に小樽着。途中のSAで朝食休憩も◎。到着後は荷物をホテルに預けてから身軽に動こう。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">10:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦀 海鮮</span>
+              <div class="tl-main">小樽三角市場　朝食ランチ</div>
+              <div class="tl-desc">ウニ丼・カニ汁・海鮮丼。市場の活気を感じながらゆっくり食べよう。11時頃になれば混雑もひと段落。</div>
+              <div class="tl-links"><a class="tl-link" href="http://otaru-sankaku.com/" target="_blank">三角市場公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">11:30</div>
+            <div class="tl-content">
+              <span class="tl-label note">🐟 スナック</span>
+              <div class="tl-main">かま栄　パンロール（¥216）</div>
+              <div class="tl-desc">小樽名物のかまぼこをパンで包んだ「パンロール」。食べながら歩けるサイズ感が最高。</div>
+              <div class="tl-links"><a class="tl-link" href="https://kamaei.co.jp/" target="_blank">かま栄公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">12:00</div>
+            <div class="tl-content">
+              <span class="tl-label soft">🍦 ソフト</span>
+              <div class="tl-main">山中牧場小樽店　ソフトクリーム</div>
+              <div class="tl-desc">北海道産生乳100%の濃厚ソフト。小樽運河エリアで食べながら運河散策へ。</div>
+              <div class="tl-links"><a class="tl-link" href="https://tabelog.com/hokkaido/A0106/A010601/1007557/" target="_blank">食べログ情報</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">12:30</div>
+            <div class="tl-content">
+              <span class="tl-label note">🧀 スイーツ</span>
+              <div class="tl-main">LeTAO　ドゥーブルフロマージュ</div>
+              <div class="tl-desc">北海道を代表するチーズケーキ。小樽本店でイートイン。お土産用は帰りに購入を。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.letao-brand.jp/" target="_blank">LeTAO公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">13:30</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🚶 散策</span>
+              <div class="tl-main">小樽運河をゆったり散歩</div>
+              <div class="tl-desc">急がずのんびり運河沿いを歩く。写真撮影、倉庫群の雰囲気を楽しもう。30分程度でOK。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">14:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">小樽 → 札幌　約40分</div>
+              <div class="tl-desc">短距離移動なので全く疲れない。札幌のホテルに荷物を置いてから夕方の食べ歩きへ。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">15:30</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦀 海鮮</span>
+              <div class="tl-main">二条市場　カニ・海鮮つまみ食い</div>
+              <div class="tl-desc">毛ガニ・ボタンエビをつまみながらブラブラ。夕食前の軽いつまみ食い感覚で。</div>
+              <div class="tl-links"><a class="tl-link" href="https://nijomarket.com/" target="_blank">二条市場公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">17:30</div>
+            <div class="tl-content">
+              <span class="tl-label curry">🍛 スープカレー</span>
+              <div class="tl-main">スープカレー　ピカンティ or 奥芝商店</div>
+              <div class="tl-desc">札幌発祥のスープカレー。ピカンティは野菜たっぷり、奥芝商店はえびのスープが絶品。17:30着なら並び時間も短め。</div>
+              <div class="tl-links">
+                <a class="tl-link" href="https://tabelog.com/hokkaido/A0101/A010101/1025001/" target="_blank">ピカンティ</a>
+                <a class="tl-link" href="https://okushiba.net/" target="_blank">奥芝商店</a>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">20:00</div>
+            <div class="tl-content">
+              <span class="tl-label ramen">🍜 ラーメン</span>
+              <div class="tl-main">元祖さっぽろラーメン横丁　〆の味噌ラーメン</div>
+              <div class="tl-desc">昭和26年創業、17店舗がひしめく聖地。天鳳・白樺山荘などで濃厚味噌を。カレーの後でも1杯いける！</div>
+              <div class="tl-links"><a class="tl-link" href="http://www.ganso-yokocho.com/" target="_blank">ラーメン横丁公式</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-section">
+          <h4>🏨 宿泊候補（札幌エリア）</h4>
+          <div class="hotel-list">
+            <div class="hotel-item">
+              <div class="hotel-star">⭐</div>
+              <div class="hotel-info">
+                <div class="hotel-name">三井ガーデンホテル札幌 <span class="hotel-rec">コスパ推し</span></div>
+                <div class="hotel-price">¥8,750〜14,000/人</div>
+                <div class="hotel-desc">2026年2月リノベ済。札幌駅徒歩5分。大浴場あり。ラーメン横丁まで歩いて帰れる好立地。</div>
+              </div>
+            </div>
+            <div class="hotel-item">
+              <div class="hotel-star">🏆</div>
+              <div class="hotel-info">
+                <div class="hotel-name">クロスホテル札幌</div>
+                <div class="hotel-price">¥10,000〜18,000/人</div>
+                <div class="hotel-desc">大通公園徒歩3分。屋上露天風呂でラーメン後の一風呂が最高。</div>
+              </div>
+            </div>
+            <div class="hotel-item">
+              <div class="hotel-star">🥂</div>
+              <div class="hotel-info">
+                <div class="hotel-name">京王プラザホテル札幌</div>
+                <div class="hotel-price">¥15,000〜28,000/人</div>
+                <div class="hotel-desc">旅の最後の夜は贅沢に。大型ホテルならではの施設でゆったり。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="day-card hakodate open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">4</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 4（7/27 月）　札幌 → 函館 → 帰路</div>
+          <div class="day-sub">場外市場朝食 → 町村農場ソフト → 函館ラーメン → 帰宅</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge long">🚗 札幌→函館：約3h30m　※朝9時出発で余裕あり</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">07:30</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦀 海鮮</span>
+              <div class="tl-main">札幌場外市場　朝食＆お土産</div>
+              <div class="tl-desc">毛ガニ・ホタテ・イクラ・海鮮丼が揃う。お土産は冷凍便で自宅に発送すれば荷物ゼロ！</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.jyogaishijyo.com/" target="_blank">場外市場公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">09:00</div>
+            <div class="tl-content">
+              <span class="tl-label soft">🍦 ソフト</span>
+              <div class="tl-main">町村農場　大通公園店（¥440）</div>
+              <div class="tl-desc">北海道老舗牧場のソフト。濃厚なのにすっきりした後味。旅の〆スイーツとして完璧。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">09:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">札幌 → 函館　約3時間30分</div>
+              <div class="tl-desc">高速道路メインで快適。途中洞爺湖SAで絶景休憩がおすすめ。13時頃函館着。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">13:30</div>
+            <div class="tl-content">
+              <span class="tl-label ramen">🍜 ラーメン</span>
+              <div class="tl-main">函館塩ラーメン　旅の最終ランチ</div>
+              <div class="tl-desc">「一文字」など函館老舗で塩ラーメンを〆に。澄んだスープが旅の疲れをすっと癒してくれる。</div>
+              <div class="tl-links"><a class="tl-link" href="https://retty.me/theme/100441623/" target="_blank">函館ラーメン情報</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">15:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">レンタカー返却 → 函館空港 → 帰路フライト</div>
+              <div class="tl-desc">梅村：函館→羽田　市澤：函館→中部。空港で解散！最高の旅をありがとう。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.tabirai.net/s/car/hokkaido/hakodate_airport/" target="_blank">レンタカー返却情報</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /hakodate-plan -->
+
+  <!-- ========== 新千歳プラン ========== -->
+  <div class="plan-section" id="chitose-plan">
+    <div style="background:#2e7d32;color:#fff;border-radius:12px;padding:14px 20px;margin-bottom:8px;font-weight:900;font-size:16px;">
+      ✈️ 新千歳IN/OUTプラン　―　小樽2泊＋函館1泊
+    </div>
+    <div class="plan-alert" style="margin-top:0;">
+      <span class="alert-icon">💡</span>
+      <div>
+        <strong>移動疲れ対策：小樽を拠点にしてDay2の積丹を日帰りに</strong>
+        小樽に2泊することで積丹（片道1h）が楽な日帰りドライブに。札幌→函館の長距離はDay3の1回だけに集約。乗り捨て料金が発生するが、フライト代の節約で十分カバーできる。
+      </div>
+    </div>
+
+    <!-- DAY 1 千歳 -->
+    <div class="day-card chitose open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">1</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 1（7/24 金）　新千歳 → 小樽　ゆったり入り</div>
+          <div class="day-sub">空港集合 → 三角市場 → LeTAO → 寿司屋通り → ジンギスカン</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge short">🚗 この日の最長移動：新千歳→小樽 約1時間</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">09:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">新千歳空港集合・レンタカーピックアップ</div>
+              <div class="tl-desc">梅村：羽田→新千歳 約1h35m｜市澤：中部→新千歳 約1h40m。格安LCCが豊富でフライト代を大幅節約可能。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.airtrip.jp/flight/HND/CTS/" target="_blank">格安航空券を見る</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">11:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦀 海鮮</span>
+              <div class="tl-main">小樽三角市場　ランチ</div>
+              <div class="tl-desc">新千歳→小樽は約1時間の楽ちんドライブ。三角市場でウニ丼・カニ汁をがっつり。旅のスタートを飾ろう。</div>
+              <div class="tl-links"><a class="tl-link" href="http://otaru-sankaku.com/" target="_blank">三角市場公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">13:00</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🏨 休憩</span>
+              <div class="tl-main">ホテルチェックイン＆荷物を置く</div>
+              <div class="tl-desc">小樽は2泊するので荷物をしっかり置いて身軽に。ホテルスタッフに観光情報を聞くのも◎。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">14:00</div>
+            <div class="tl-content">
+              <span class="tl-label note">🧀 スイーツ</span>
+              <div class="tl-main">LeTAO ＆ かま栄パンロール　食べ歩き</div>
+              <div class="tl-desc">LeTAOで二層チーズケーキ、かま栄でパンロール（¥216）。ゆっくり食べ歩きしながら小樽運河へ。</div>
+              <div class="tl-links">
+                <a class="tl-link" href="https://www.letao-brand.jp/" target="_blank">LeTAO公式</a>
+                <a class="tl-link" href="https://kamaei.co.jp/" target="_blank">かま栄公式</a>
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">15:00</div>
+            <div class="tl-content">
+              <span class="tl-label soft">🍦 ソフト</span>
+              <div class="tl-main">山中牧場小樽店　ソフトクリーム</div>
+              <div class="tl-desc">小樽運河そばで濃厚ミルクソフト。運河と一緒に写真を撮りながらのんびり。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">16:30</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🚶 散策</span>
+              <div class="tl-main">小樽運河・倉庫群をゆったり散歩</div>
+              <div class="tl-desc">ガラス工房や小樽の路地裏をぶらぶら。急がない。疲れたらカフェに入ってもOK。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">18:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🍣 海鮮</span>
+              <div class="tl-main">小樽寿司屋通り　夕食</div>
+              <div class="tl-desc">ボタンエビ・カニ握り・ホタテ・サーモンなど。政寿司やおたる蝦夷屋など名店が集まる通り。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">20:00</div>
+            <div class="tl-content">
+              <span class="tl-label meat">🥩 ジンギスカン</span>
+              <div class="tl-main">小樽でジンギスカン　夜の〆</div>
+              <div class="tl-desc">えいじん小樽店・北とうがらし出抜小路店などが人気。海鮮の後にラム肉で〆るのが北海道の醍醐味！</div>
+              <div class="tl-links"><a class="tl-link" href="https://maps.google.com/?q=小樽+ジンギスカン" target="_blank">Googleマップ</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-section">
+          <h4>🏨 宿泊候補（小樽エリア・2泊連泊）</h4>
+          <div class="hotel-list">
+            <div class="hotel-item">
+              <div class="hotel-star">⭐</div>
+              <div class="hotel-info">
+                <div class="hotel-name">グリッズプレミアムホテル小樽 <span class="hotel-rec">コスパ推し</span></div>
+                <div class="hotel-price">¥8,000〜13,000/人</div>
+                <div class="hotel-desc">屋上露天風呂&サウナ完備。2泊連泊でコスパ最強。積丹帰りにひとっ風呂が最高。</div>
+              </div>
+            </div>
+            <div class="hotel-item">
+              <div class="hotel-star">🏆</div>
+              <div class="hotel-info">
+                <div class="hotel-name">ホテルソニア小樽</div>
+                <div class="hotel-price">¥9,000〜16,000/人</div>
+                <div class="hotel-desc">小樽運河まで徒歩2分。天然温泉あり。2泊して運河の朝と夜を両方楽しもう。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 千歳 -->
+    <div class="day-card chitose open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">2</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 2（7/25 土）　積丹ウニ日帰りドライブ</div>
+          <div class="day-sub">小樽泊 → 積丹ウニ丼 → 食べ比べ → 小樽に帰還 → 二条市場</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge short">🚗 小樽↔積丹：片道約1時間！函館プランより全然楽</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">07:30</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">小樽 → 積丹　約1時間</div>
+              <div class="tl-desc">函館プランと比べて移動が2時間も短い！8:30着を目標にゆっくり出発できる。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">09:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦔 海鮮</span>
+              <div class="tl-main">お食事処みさき　赤バフンウニ丼</div>
+              <div class="tl-desc">赤バフンウニの濃厚な甘みは絶対食べるべき。9:00開店、8:30には並ぼう！</div>
+              <div class="tl-links"><a class="tl-link" href="https://osyokujidokoromisaki.com/" target="_blank">みさき公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">11:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦔 海鮮</span>
+              <div class="tl-main">中村屋　バフン＆ムラサキウニ食べ比べ</div>
+              <div class="tl-desc">赤と白のウニを1杯で食べ比べ。積丹でしか体験できない贅沢。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.nakamuraya.co/" target="_blank">中村屋公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">12:30</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🌊 休憩</span>
+              <div class="tl-main">シャコタンブルーの絶景でゆったり</div>
+              <div class="tl-desc">神威岬や積丹岬の展望スポットでのんびり。急いで帰る必要なし。小樽は近い！</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">14:00</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">積丹 → 小樽　約1時間で帰還</div>
+              <div class="tl-desc">15時には小樽に戻れる。ホテルで休憩してから夕方の活動へ。体への負担が全然違う。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">15:30</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🛁 休憩</span>
+              <div class="tl-main">ホテルに戻って休憩・温泉</div>
+              <div class="tl-desc">早めに帰れるのが千歳プランの積丹の強み。露天風呂でゆっくり疲れを取ろう。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">17:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦀 海鮮</span>
+              <div class="tl-main">小樽でつまみ食い散歩</div>
+              <div class="tl-desc">昨日行けなかった店や市場をぶらり。小樽は歩いて回れるコンパクトな街なので疲れにくい。</div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-section">
+          <h4>🏨 宿泊（小樽・連泊2泊目）</h4>
+          <div class="hotel-list">
+            <div class="hotel-item">
+              <div class="hotel-star">✅</div>
+              <div class="hotel-info">
+                <div class="hotel-name">Day 1と同じホテルに連泊 <span class="hotel-rec">移動ゼロ</span></div>
+                <div class="hotel-price">－</div>
+                <div class="hotel-desc">積丹から帰ってそのままホテルへ。荷物移動なし。短い距離なので体への負担も最小。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 千歳 -->
+    <div class="day-card chitose open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">3</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 3（7/26 日）　小樽 → 札幌 → 函館</div>
+          <div class="day-sub">場外市場 → 町村農場 → 函館へ → 朝市 → 五稜郭 → 夜景</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge long">🚗 この日は移動多め：小樽→札幌40分→函館3.5h　早め行動で午後ゆったり</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">07:30</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦀 海鮮</span>
+              <div class="tl-main">札幌場外市場　朝食＆お土産</div>
+              <div class="tl-desc">小樽から40分で場外市場へ。毛ガニ・ホタテ・イクラを朝から豪快に。お土産は冷凍発送が楽。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.jyogaishijyo.com/" target="_blank">場外市場公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">09:30</div>
+            <div class="tl-content">
+              <span class="tl-label soft">🍦 ソフト</span>
+              <div class="tl-main">町村農場　大通公園店（¥440）</div>
+              <div class="tl-desc">北海道老舗牧場の濃厚ソフト。旅の中盤の甘い一息。大通公園でのんびり食べよう。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">10:00</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">札幌 → 函館　約3時間30分</div>
+              <div class="tl-desc">高速メインで快適ドライブ。洞爺湖SAで休憩を挟もう。13:30頃に函館着。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">14:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦑 海鮮</span>
+              <div class="tl-main">函館朝市　遅ランチ</div>
+              <div class="tl-desc">14:30まで営業している店で活イカ・ウニ丼。14時台は空いていてゆっくり食べられる。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.hakodate-asaichi.com/" target="_blank">朝市公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">15:30</div>
+            <div class="tl-content">
+              <span class="tl-label sightseeing">🏯 観光</span>
+              <div class="tl-main">五稜郭タワー見学</div>
+              <div class="tl-desc">星型の要塞を展望台から一望。夕暮れ時の空との組み合わせが特に絶景。所要約1時間。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.goryokaku-tower.co.jp/" target="_blank">五稜郭タワー公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">17:30</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🛁 休憩</span>
+              <div class="tl-main">ホテルチェックイン＆休憩</div>
+              <div class="tl-desc">長距離移動の後はホテルで一息。夜景前に体力を回復させておこう。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">18:30</div>
+            <div class="tl-content">
+              <span class="tl-label ramen">🍜 ラーメン</span>
+              <div class="tl-main">函館塩ラーメン　夕食</div>
+              <div class="tl-desc">あじさいや一文字で澄んだ塩スープのラーメン。移動疲れにあっさり塩スープが染みる。</div>
+              <div class="tl-links"><a class="tl-link" href="https://ajisai.tv/" target="_blank">あじさい公式</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">20:00</div>
+            <div class="tl-content">
+              <span class="tl-label sightseeing">🌃 観光</span>
+              <div class="tl-main">函館山ロープウェイ　夜景</div>
+              <div class="tl-desc">世界三大夜景を旅の最後に。山頂の夜景は一生忘れられない景色になるはず。</div>
+              <div class="tl-links"><a class="tl-link" href="https://334.co.jp/" target="_blank">ロープウェイ公式</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-section">
+          <h4>🏨 宿泊候補（函館エリア）</h4>
+          <div class="hotel-list">
+            <div class="hotel-item">
+              <div class="hotel-star">⭐</div>
+              <div class="hotel-info">
+                <div class="hotel-name">JRイン函館 <span class="hotel-rec">コスパ推し</span></div>
+                <div class="hotel-price">¥8,000〜13,000/人</div>
+                <div class="hotel-desc">駅直結・翌朝の朝市まで徒歩1分。大浴場あり。最終夜の疲れを癒やすのに最適。</div>
+              </div>
+            </div>
+            <div class="hotel-item">
+              <div class="hotel-star">🏆</div>
+              <div class="hotel-info">
+                <div class="hotel-name">センチュリーマリーナ函館</div>
+                <div class="hotel-price">¥15,000〜25,000/人</div>
+                <div class="hotel-desc">港ビュー。海鮮朝食バイキング。旅の最終夜を特別な一夜に。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 4 千歳 -->
+    <div class="day-card chitose open">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-number">4</div>
+        <div class="day-title-area">
+          <div class="day-title">📅 Day 4（7/27 月）　函館 → 新千歳 → 帰路</div>
+          <div class="day-sub">朝市朝食 → 元町散策 → 新千歳へ乗り捨て → 帰宅</div>
+        </div>
+        <div class="day-arrow">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="drive-badge long">🚗 函館→新千歳：約4時間　※乗り捨て料金¥5,000〜15,000が別途発生</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">07:00</div>
+            <div class="tl-content">
+              <span class="tl-label seafood">🦑 海鮮</span>
+              <div class="tl-main">函館朝市　最終朝食</div>
+              <div class="tl-desc">旅の最後に函館朝市で活イカ・巴丼。5:00〜営業しているので早起きしても食べられる。</div>
+              <div class="tl-links"><a class="tl-link" href="https://donburiyokocho.com/" target="_blank">どんぶり横丁</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">09:00</div>
+            <div class="tl-content">
+              <span class="tl-label rest">🚶 散策</span>
+              <div class="tl-main">函館元町・赤レンガ倉庫をぶらり</div>
+              <div class="tl-desc">異国情緒の坂道と赤レンガ倉庫。函館の朝の空気を感じながらゆっくり散歩。</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">11:00</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">函館 → 新千歳　乗り捨てで約4時間</div>
+              <div class="tl-desc">高速道路利用。途中で洞爺湖や室蘭の景色を楽しみながら。15時頃新千歳着。<br><span style="color:#e74c3c;font-size:11px;">⚠️ 乗り捨て料金¥5,000〜15,000が別途かかります</span></div>
+              <div class="tl-links"><a class="tl-link" href="https://www.orion-tour.co.jp/orion/air/column/id-78184" target="_blank">乗り捨て情報</a></div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-time">16:00</div>
+            <div class="tl-content">
+              <span class="tl-label move">移動</span>
+              <div class="tl-main">新千歳空港　レンタカー返却 → 帰路フライト</div>
+              <div class="tl-desc">梅村：新千歳→羽田　市澤：新千歳→中部。お疲れ様でした！最高の旅をありがとう。</div>
+              <div class="tl-links"><a class="tl-link" href="https://www.airdo.jp/" target="_blank">AirDo予約</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /chitose-plan -->
+
+  <!-- ========== 比較ビュー ========== -->
+  <div class="plan-section" id="compare">
+    <div class="plan-summary">
+      <h3>⚖️ 函館プラン vs 新千歳プラン　移動疲れ考慮版まとめ比較</h3>
+      <div class="summary-grid">
+        <div class="summary-col">
+          <h4 class="h">✈️ 函館IN/OUT（函館2泊）</h4>
+          <ul>
+            <li><span>フライト（梅村）</span><span style="color:#1565c0;font-weight:700;">¥18,000〜</span></li>
+            <li><span>フライト（市澤）</span><span style="color:#1565c0;font-weight:700;">¥23,000〜</span></li>
+            <li><span>レンタカー</span><span>¥20,000〜35,000</span></li>
+            <li><span>乗り捨て料金</span><span style="color:var(--green);font-weight:700;">¥0（なし）</span></li>
+            <li><span>積丹への距離</span><span style="color:#e74c3c;">片道約3時間</span></li>
+            <li><span>連泊で荷物移動</span><span style="color:var(--green);">函館2泊でゼロ</span></li>
+            <li><span>ジンギスカン</span><span>函館 Day1夜</span></li>
+            <li><span>五稜郭</span><span style="color:var(--green);">✅ Day1午後</span></li>
+          </ul>
+        </div>
+        <div class="summary-col">
+          <h4 class="c">✈️ 新千歳IN/OUT（小樽2泊）</h4>
+          <ul>
+            <li><span>フライト（梅村）</span><span style="color:var(--green);font-weight:700;">¥9,000〜（LCC）</span></li>
+            <li><span>フライト（市澤）</span><span style="color:var(--green);font-weight:700;">¥12,000〜（LCC）</span></li>
+            <li><span>レンタカー</span><span>¥25,000〜40,000</span></li>
+            <li><span>乗り捨て料金</span><span style="color:var(--seafood);font-weight:700;">¥5,000〜15,000（別途）</span></li>
+            <li><span>積丹への距離</span><span style="color:var(--green);">片道約1時間🎉</span></li>
+            <li><span>連泊で荷物移動</span><span style="color:var(--green);">小樽2泊でゼロ</span></li>
+            <li><span>ジンギスカン</span><span>小樽 Day1夜</span></li>
+            <li><span>五稜郭</span><span style="color:var(--green);">✅ Day3午後</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="verdict">
+        <strong>💡 移動疲れ観点での結論：</strong>積丹への移動距離は<strong>千歳プランが圧倒的に楽（片道1h vs 3h）</strong>。ただし函館プランも「函館2泊」にしたことで荷物移動ゼロ・積丹日帰りで十分快適に。<br><br>
+        <strong>「とにかく楽に旅したい」→ 新千歳プラン</strong>（積丹が近い・フライト安い）。<strong>「函館を堪能したい・コスト計算しやすい」→ 函館プラン</strong>（乗り捨てなし・函館に余裕あり）。
+      </div>
+    </div>
+
+    <div style="background:#e3f2fd;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;color:#1565c0;border:1px solid #bbdefb;">
+      💡 各プランの詳細スケジュールは「<strong>函館IN/OUTプラン</strong>」または「<strong>新千歳IN/OUTプラン</strong>」タブをご確認ください。
+    </div>
+
+    <!-- 簡略比較グリッド -->
+    <div class="compare-grid">
+      <div>
+        <div style="background:#1565c0;color:#fff;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:900;font-size:14px;text-align:center;">✈️ 函館プラン（函館2泊）</div>
+        <div class="day-card hakodate" style="margin-bottom:10px;">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;">1</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/24 函館（函館泊①）</div>
+              <div class="day-sub">朝市→五稜郭→ソフト→ジンギスカン→夜景</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🚗 空港→市内 <b>たった15分</b><br>
+              🦑 <b>10:30</b> 函館朝市ランチ<br>
+              🏯 <b>14:30</b> 五稜郭タワー<br>
+              🍦 <b>16:00</b> ソフトクリーム散策<br>
+              🥩 <b>18:00</b> ジンギスカン夕食<br>
+              🌃 <b>20:00</b> 函館山夜景<br>
+              🏨 JRイン函館（推奨・2泊連泊）
+            </div>
+          </div>
+        </div>
+        <div class="day-card hakodate" style="margin-bottom:10px;">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;">2</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/25 積丹日帰り（函館泊②）</div>
+              <div class="day-sub">早朝出発→ウニ丼→海眺め→函館帰還→温泉→塩ラーメン</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🚗 <b>06:30</b> 函館出発（片道3h）<br>
+              🦔 <b>09:00</b> みさき ウニ丼<br>
+              🦔 <b>11:00</b> 中村屋 食べ比べ<br>
+              🌊 <b>12:00</b> 積丹の海でのんびり<br>
+              🚗 <b>13:00</b> 函館へ帰還<br>
+              🛁 <b>16:30</b> ホテルで温泉休憩<br>
+              🍜 <b>18:30</b> 函館塩ラーメン
+            </div>
+          </div>
+        </div>
+        <div class="day-card hakodate" style="margin-bottom:10px;">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;">3</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/26 小樽→札幌（札幌泊）</div>
+              <div class="day-sub">三角市場→かま栄→LeTAO→スープカレー→ラーメン横丁</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🚗 <b>07:30</b> 函館→小樽 2.5h<br>
+              🦀 <b>10:00</b> 三角市場ランチ<br>
+              🐟 <b>11:30</b> かま栄パンロール<br>
+              🍦 <b>12:00</b> 山中牧場ソフト<br>
+              🧀 <b>12:30</b> LeTAOチーズケーキ<br>
+              🚗 <b>14:30</b> 小樽→札幌 40分<br>
+              🍛 <b>17:30</b> スープカレー<br>
+              🍜 <b>20:00</b> ラーメン横丁
+            </div>
+          </div>
+        </div>
+        <div class="day-card hakodate">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;">4</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/27 札幌→函館→帰路</div>
+              <div class="day-sub">場外市場→町村農場→函館ラーメン→帰宅</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🦀 <b>07:30</b> 場外市場朝食・お土産<br>
+              🍦 <b>09:00</b> 町村農場ソフト¥440<br>
+              🚗 <b>09:30</b> 札幌→函館 3.5h<br>
+              🍜 <b>13:30</b> 函館塩ラーメン<br>
+              ✈️ <b>15:30</b> レンタカー返却・帰路<br>
+              <span style="color:var(--green);font-size:11px;">✅ 乗り捨て料金ゼロ</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="background:#2e7d32;color:#fff;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:900;font-size:14px;text-align:center;">✈️ 千歳プラン（小樽2泊）</div>
+        <div class="day-card chitose" style="margin-bottom:10px;">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;background:#2e7d32;">1</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/24 新千歳→小樽（小樽泊①）</div>
+              <div class="day-sub">三角市場→LeTAO→運河→寿司屋通り→ジンギスカン</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🚗 <b>09:30</b> 新千歳→小樽 <b>約1h</b><br>
+              🦀 <b>11:00</b> 三角市場ランチ<br>
+              🏨 <b>13:00</b> ホテルチェックイン（2泊連泊）<br>
+              🧀 <b>14:00</b> LeTAO＆かま栄食べ歩き<br>
+              🍦 <b>15:00</b> 山中牧場ソフト<br>
+              🚶 <b>15:30</b> 小樽運河散歩<br>
+              🍣 <b>18:00</b> 寿司屋通り夕食<br>
+              🥩 <b>20:00</b> ジンギスカン〆
+            </div>
+          </div>
+        </div>
+        <div class="day-card chitose" style="margin-bottom:10px;">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;background:#2e7d32;">2</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/25 積丹日帰り（小樽泊②）</div>
+              <div class="day-sub">早朝出発→ウニ丼→海眺め→小樽帰還→温泉→ゆったり</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🚗 <b>07:30</b> 小樽出発（<b>片道1h！</b>）<br>
+              🦔 <b>09:00</b> みさき ウニ丼<br>
+              🦔 <b>11:00</b> 中村屋 食べ比べ<br>
+              🌊 <b>12:30</b> 積丹の海でのんびり<br>
+              🚗 <b>14:00</b> 小樽へ帰還（1h）<br>
+              🛁 <b>15:30</b> ホテルで温泉ゆったり<br>
+              🚶 <b>17:00</b> 小樽でつまみ食い散歩
+            </div>
+          </div>
+        </div>
+        <div class="day-card chitose" style="margin-bottom:10px;">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;background:#2e7d32;">3</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/26 小樽→札幌→函館（函館泊）</div>
+              <div class="day-sub">場外市場→町村農場→函館→朝市→五稜郭→夜景</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🦀 <b>07:30</b> 場外市場朝食（小樽→40分）<br>
+              🍦 <b>09:30</b> 町村農場ソフト<br>
+              🚗 <b>10:00</b> 札幌→函館 3.5h<br>
+              🦑 <b>14:00</b> 函館朝市遅ランチ<br>
+              🏯 <b>15:30</b> 五稜郭タワー<br>
+              🛁 <b>17:30</b> ホテルで休憩<br>
+              🍜 <b>18:30</b> 函館塩ラーメン<br>
+              🌃 <b>20:00</b> 函館山夜景
+            </div>
+          </div>
+        </div>
+        <div class="day-card chitose">
+          <div class="day-header" style="padding:12px 14px;" onclick="toggleDay(this)">
+            <div class="day-number" style="width:36px;height:36px;font-size:14px;background:#2e7d32;">4</div>
+            <div class="day-title-area">
+              <div class="day-title" style="font-size:13px;">7/27 函館→新千歳→帰路</div>
+              <div class="day-sub">朝市→元町散策→新千歳へ乗り捨て→帰宅</div>
+            </div>
+            <div class="day-arrow">▼</div>
+          </div>
+          <div class="day-body" style="padding:0 12px 12px;">
+            <div style="font-size:12px;line-height:2;color:#444;">
+              🦑 <b>07:00</b> 函館朝市 最終朝食<br>
+              🚶 <b>09:00</b> 元町・赤レンガ散策<br>
+              🚗 <b>11:00</b> 函館→新千歳 4h<br>
+              ✈️ <b>16:00</b> 新千歳レンタカー返却・帰路<br>
+              <span style="color:var(--seafood);font-size:11px;">⚠️ 乗り捨て料¥5,000〜15,000が別途発生</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /compare -->
+
+  <!-- TIPS -->
+  <div class="tips-card">
+    <h3>💡 旅のコツ & 注意点</h3>
+    <div class="tips-grid">
+      <div class="tip-item"><strong>🦔 ウニ丼は朝イチ勝負</strong>積丹みさきは8:30着必須。開店直後に売り切れることも。</div>
+      <div class="tip-item"><strong>🛁 積丹帰りは温泉直行</strong>長距離ドライブ後は大浴場で足を伸ばすだけで翌日の疲れが全然違う。</div>
+      <div class="tip-item"><strong>🍜 ラーメン横丁は夜18時以降</strong>昼間は閉まっている店多数。夜に行くべき場所。</div>
+      <div class="tip-item"><strong>🍛 スープカレーは17時台</strong>混雑ピーク前に入ると待ち時間少なめ。</div>
+      <div class="tip-item"><strong>🚗 レンタカーは今すぐ予約</strong>7月ピーク期は車種が埋まる前に早めに確保を。</div>
+      <div class="tip-item"><strong>💴 現金は1日2〜3万円</strong>市場や小さな食堂はカード不可多数。多めに準備を。</div>
+      <div class="tip-item"><strong>🧥 服装は重ね着で</strong>7月は15〜25℃。夜の函館山は10℃前後まで下がる。</div>
+      <div class="tip-item"><strong>📦 お土産は冷凍発送</strong>場外市場・朝市で冷凍便を手配すれば荷物ゼロで帰れる。</div>
+    </div>
+  </div>
+
+</div><!-- /main-wrap -->
+
+<div class="footer">
+  🦀 北海道食べ歩き旅 2026｜梅村亮平（神奈川）＋市澤整（名古屋）<br>
+  このプランはAIが作成した参考情報です。価格・営業時間は変動しますので必ず公式サイトでご確認ください。
 </div>
 
-<!-- STOPS TIMELINE -->
-<div class="stops-wrap">
-  <div class="stops-scroll" id="stops-scroll"></div>
-</div>
-
-<!-- INFO CARDS -->
-<div class="info-grid">
-  <div class="info-card">
-    <h4>📍 立ち寄りスポット</h4>
-    <ul id="spots-list"></ul>
-  </div>
-  <div class="info-card">
-    <h4>🚗 移動距離・時間</h4>
-    <ul id="distance-list"></ul>
-  </div>
-</div>
-
+<!-- ===== SCRIPTS ===== -->
 <script>
-// ========== プランデータ ==========
-const plans = {
-  hakodate: {
-    name: '函館IN/OUTプラン',
-    color: '#1565c0',
-    stops: [
-      { lat: 41.7700, lng: 140.8225, name: '函館空港', icon: '✈️', day: 'Day1', desc: '梅村・市澤 合流。レンタカーピックアップ', time: '08:00' },
-      { lat: 41.7686, lng: 140.7288, name: '函館朝市', icon: '🦑', day: 'Day1', desc: '活イカ釣り・海鮮丼・元祖巴丼', time: '11:00' },
-      { lat: 41.7984, lng: 140.7571, name: '函館塩ラーメン', icon: '🍜', day: 'Day1', desc: '麺厨房あじさい（澄んだ塩スープ）', time: '13:30' },
-      { lat: 41.7966, lng: 140.7575, name: '五稜郭タワー', icon: '🏯', day: 'Day1', desc: '107mの展望台から星型要塞を一望', time: '15:00' },
-      { lat: 41.7720, lng: 140.7260, name: 'ジンギスカン（夕食）', icon: '🥩', day: 'Day1', desc: '大門横丁エリアでジンギスカン', time: '18:00' },
-      { lat: 41.7576, lng: 140.7151, name: '函館山ロープウェイ', icon: '🌃', day: 'Day1', desc: '世界三大夜景を堪能', time: '20:00' },
-      { lat: 43.1950, lng: 140.4546, name: 'お食事処みさき（積丹）', icon: '🦔', day: 'Day2', desc: '赤バフンウニ丼の聖地。8:30着推奨', time: '10:00' },
-      { lat: 43.1900, lng: 140.4580, name: '中村屋（積丹）', icon: '🦔', day: 'Day2', desc: 'バフン＆ムラサキウニ食べ比べ', time: '12:00' },
-      { lat: 43.1907, lng: 140.9948, name: '小樽寿司屋通り', icon: '🍣', day: 'Day2', desc: 'ボタンエビ・カニ握り・ホタテ', time: '16:00' },
-      { lat: 43.1905, lng: 141.0027, name: '三角市場（小樽）', icon: '🦀', day: 'Day3', desc: 'カニ汁・ウニ丼で豪快朝食', time: '07:00' },
-      { lat: 43.1862, lng: 140.9974, name: 'かま栄', icon: '🐟', day: 'Day3', desc: 'パンロール¥216。外せない小樽名物', time: '09:30' },
-      { lat: 43.1876, lng: 140.9948, name: '山中牧場ソフト（小樽）', icon: '🍦', day: 'Day3', desc: '北海道産生乳100%の濃厚ソフト', time: '10:00' },
-      { lat: 43.1892, lng: 140.9933, name: 'LeTAO', icon: '🧀', day: 'Day3', desc: 'ドゥーブルフロマージュ（本店）', time: '11:00' },
-      { lat: 43.0618, lng: 141.3545, name: '二条市場（札幌）', icon: '🦀', day: 'Day3', desc: '毛ガニ・ボタンエビをつまみ食い', time: '14:30' },
-      { lat: 43.0542, lng: 141.3556, name: 'スープカレー（札幌）', icon: '🍛', day: 'Day3', desc: 'ピカンティ or 奥芝商店', time: '17:00' },
-      { lat: 43.0560, lng: 141.3517, name: 'ラーメン横丁（札幌）', icon: '🍜', day: 'Day3', desc: '元祖さっぽろラーメン横丁。味噌ハシゴ！', time: '19:30' },
-      { lat: 43.0686, lng: 141.3507, name: '場外市場（札幌）', icon: '🦀', day: 'Day4', desc: '海鮮朝食＆お土産 冷凍便で発送', time: '07:00' },
-      { lat: 43.0600, lng: 141.3534, name: '町村農場ソフト', icon: '🍦', day: 'Day4', desc: '大通公園店。¥440の濃厚ソフト', time: '09:00' },
-      { lat: 41.7984, lng: 140.7571, name: '函館塩ラーメン（帰り）', icon: '🍜', day: 'Day4', desc: '旅の〆ラーメン。一文字など老舗へ', time: '13:30' },
-      { lat: 41.7700, lng: 140.8225, name: '函館空港（帰路）', icon: '✈️', day: 'Day4', desc: '梅村→羽田　市澤→中部。お疲れ様！', time: '16:00' },
-    ]
-  },
-  chitose: {
-    name: '新千歳IN/OUTプラン',
-    color: '#2e7d32',
-    stops: [
-      { lat: 42.7752, lng: 141.6920, name: '新千歳空港', icon: '✈️', day: 'Day1', desc: '梅村・市澤 合流。LCCで格安入り！レンタカーピックアップ', time: '09:00' },
-      { lat: 43.1905, lng: 141.0027, name: '三角市場（小樽）', icon: '🦀', day: 'Day1', desc: 'ウニ丼・カニ汁で旅のスタート', time: '11:00' },
-      { lat: 43.1892, lng: 140.9933, name: 'LeTAO ＆ かま栄', icon: '🧀', day: 'Day1', desc: 'LeTAOチーズケーキ＋パンロール食べ歩き', time: '13:00' },
-      { lat: 43.1876, lng: 140.9948, name: '山中牧場ソフト（小樽）', icon: '🍦', day: 'Day1', desc: '小樽運河そばで濃厚ミルクソフト', time: '14:00' },
-      { lat: 43.1907, lng: 140.9948, name: '小樽寿司屋通り', icon: '🍣', day: 'Day1', desc: 'ボタンエビ・カニ握り・ホタテ', time: '16:00' },
-      { lat: 43.1900, lng: 141.0010, name: 'ジンギスカン（小樽）', icon: '🥩', day: 'Day1', desc: 'えいじん小樽店。海鮮→ラム肉で〆！', time: '18:30' },
-      { lat: 43.1950, lng: 140.4546, name: 'お食事処みさき（積丹）', icon: '🦔', day: 'Day2', desc: '赤バフンウニ丼の聖地。8:30着推奨', time: '09:00' },
-      { lat: 43.1900, lng: 140.4580, name: '中村屋（積丹）', icon: '🦔', day: 'Day2', desc: 'バフン＆ムラサキウニ食べ比べ', time: '11:00' },
-      { lat: 43.0618, lng: 141.3545, name: '二条市場（札幌）', icon: '🦀', day: 'Day2', desc: '毛ガニ・ボタンエビをつまみ食い', time: '15:30' },
-      { lat: 43.0542, lng: 141.3556, name: 'スープカレー（札幌）', icon: '🍛', day: 'Day2', desc: 'ピカンティ or 奥芝商店', time: '17:30' },
-      { lat: 43.0560, lng: 141.3517, name: 'ラーメン横丁（札幌）', icon: '🍜', day: 'Day2', desc: '元祖さっぽろラーメン横丁。ハシゴ必至', time: '20:00' },
-      { lat: 43.0686, lng: 141.3507, name: '場外市場（札幌）', icon: '🦀', day: 'Day3', desc: '毛ガニ朝食＆冷凍土産を手配', time: '07:00' },
-      { lat: 43.0600, lng: 141.3534, name: '町村農場ソフト', icon: '🍦', day: 'Day3', desc: '大通公園店。¥440の老舗牧場ソフト', time: '09:00' },
-      { lat: 41.7686, lng: 140.7288, name: '函館朝市', icon: '🦑', day: 'Day3', desc: '遅ランチで活イカ・ウニ・イクラを堪能', time: '14:00' },
-      { lat: 41.7966, lng: 140.7575, name: '五稜郭タワー', icon: '🏯', day: 'Day3', desc: '北海道唯一の洋式城郭。夕暮れが絶景', time: '15:30' },
-      { lat: 41.7984, lng: 140.7571, name: '函館塩ラーメン', icon: '🍜', day: 'Day3', desc: 'あじさい or 一文字で夕食', time: '18:00' },
-      { lat: 41.7576, lng: 140.7151, name: '函館山ロープウェイ', icon: '🌃', day: 'Day3', desc: '世界三大夜景。旅のハイライト！', time: '20:00' },
-      { lat: 41.7686, lng: 140.7288, name: '函館朝市（最終朝）', icon: '🦑', day: 'Day4', desc: '旅の最後に朝市で活イカ朝食', time: '07:00' },
-      { lat: 41.7800, lng: 140.7180, name: '元町・赤レンガ散策', icon: '🏯', day: 'Day4', desc: '異国情緒の坂道と赤レンガ倉庫をぶらり', time: '09:00' },
-      { lat: 42.7752, lng: 141.6920, name: '新千歳空港（帰路）', icon: '✈️', day: 'Day4', desc: '乗り捨てレンタカー返却。梅村→羽田 市澤→中部', time: '16:00' },
-    ]
-  }
-};
-
-// ========== MAP SETUP ==========
-const map = L.map('map', { zoomControl: true, scrollWheelZoom: false });
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  maxZoom: 18
-}).addTo(map);
-
-// State
-let currentPlan = 'hakodate';
-let animFrame = null;
-let progress = 0; // 0.0 ~ 1.0
-let isPlaying = false;
-let speedMultiplier = 2;
-let lastTimestamp = null;
-let totalDuration = 18000; // ms for full route at x1
-
-// Map elements
-let routeLine = null;
-let animLine = null;
-let planeMarker = null;
-let stopMarkers = [];
-let allPoints = [];
-
-// Custom icons
-function makeIcon(emoji, size = 36) {
-  return L.divIcon({
-    html: `<div style="font-size:${size}px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));transform:translate(-50%,-50%)">${emoji}</div>`,
-    iconSize: [size, size],
-    iconAnchor: [size/2, size/2],
-    className: ''
-  });
-}
-
-function makeStopIcon(emoji, color, active = false) {
-  const border = active ? '3px solid #e8a020' : '2px solid #fff';
-  const bg = active ? '#fff9e0' : '#fff';
-  return L.divIcon({
-    html: `<div style="background:${bg};border:${border};border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">${emoji}</div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    className: ''
-  });
-}
-
-// ========== INIT PLAN ==========
-function initPlan(planKey) {
-  currentPlan = planKey;
-  const plan = plans[planKey];
-  const stops = plan.stops;
-
-  // Clear previous
-  if (routeLine) map.removeLayer(routeLine);
-  if (animLine) map.removeLayer(animLine);
-  if (planeMarker) map.removeLayer(planeMarker);
-  stopMarkers.forEach(m => map.removeLayer(m));
-  stopMarkers = [];
-
-  // All points = stop coordinates
-  allPoints = stops.map(s => [s.lat, s.lng]);
-
-  // Route (faded)
-  routeLine = L.polyline(allPoints, {
-    color: plan.color,
-    weight: 3,
-    opacity: 0.25,
-    dashArray: '8,6'
-  }).addTo(map);
-
-  // Animated line (will grow)
-  animLine = L.polyline([], {
-    color: plan.color,
-    weight: 4,
-    opacity: 0.9
-  }).addTo(map);
-
-  // Stop markers
-  stops.forEach((stop, i) => {
-    const m = L.marker([stop.lat, stop.lng], { icon: makeStopIcon(stop.icon, plan.color) })
-      .addTo(map)
-      .bindPopup(`<b>${stop.icon} ${stop.name}</b><br><span style="color:#666;font-size:12px">${stop.day} ${stop.time}</span><br>${stop.desc}`, { maxWidth: 200 });
-    stopMarkers.push(m);
-  });
-
-  // Plane marker at start
-  planeMarker = L.marker(allPoints[0], { icon: makeIcon('✈️', 30), zIndexOffset: 1000 }).addTo(map);
-
-  // Fit map
-  map.fitBounds(L.latLngBounds(allPoints).pad(0.15));
-
-  // Reset progress
-  progress = 0;
-  isPlaying = false;
-  lastTimestamp = null;
-  updateUI(0);
-  renderStopsTimeline();
-  renderInfoCards();
-}
-
-// ========== INTERPOLATE ALONG ROUTE ==========
-function getPositionAtProgress(t) {
-  // t: 0.0 ~ 1.0 along the stop array
-  const stops = plans[currentPlan].stops;
-  const n = stops.length - 1;
-  const idx = t * n;
-  const i = Math.min(Math.floor(idx), n - 1);
-  const frac = idx - i;
-  const a = allPoints[i];
-  const b = allPoints[Math.min(i + 1, n)];
-  return [a[0] + (b[0] - a[0]) * frac, a[1] + (b[1] - a[1]) * frac];
-}
-
-function getSegmentPoints(t) {
-  const stops = plans[currentPlan].stops;
-  const n = stops.length - 1;
-  const idx = t * n;
-  const i = Math.min(Math.floor(idx), n - 1);
-  const frac = idx - i;
-  const pts = allPoints.slice(0, i + 1);
-  const b = allPoints[Math.min(i + 1, n)];
-  pts.push([allPoints[i][0] + (b[0] - allPoints[i][0]) * frac,
-             allPoints[i][1] + (b[1] - allPoints[i][1]) * frac]);
-  return pts;
-}
-
-function getCurrentStopIndex(t) {
-  const n = plans[currentPlan].stops.length - 1;
-  return Math.min(Math.floor(t * n), n);
-}
-
-// ========== ANIMATION ==========
-function playAnimation() {
-  if (isPlaying) return;
-  if (progress >= 1) progress = 0;
-  isPlaying = true;
-  lastTimestamp = null;
-  animFrame = requestAnimationFrame(tick);
-}
-
-function pauseAnimation() {
-  isPlaying = false;
-  if (animFrame) cancelAnimationFrame(animFrame);
-}
-
-function resetAnimation() {
-  pauseAnimation();
-  progress = 0;
-  updateUI(0);
-}
-
-function setSpeed(val) {
-  speedMultiplier = parseFloat(val);
-}
-
-function seekByClick(e) {
-  const rect = document.getElementById('progress-bg').getBoundingClientRect();
-  const t = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  progress = t;
-  updateUI(t);
-}
-
-function tick(timestamp) {
-  if (!isPlaying) return;
-  if (!lastTimestamp) lastTimestamp = timestamp;
-  const delta = timestamp - lastTimestamp;
-  lastTimestamp = timestamp;
-
-  const duration = totalDuration / speedMultiplier;
-  progress += delta / duration;
-
-  if (progress >= 1) {
-    progress = 1;
-    updateUI(1);
-    isPlaying = false;
-    return;
+  /* ---------- DAY ACCORDION ---------- */
+  function toggleDay(header) {
+    header.closest('.day-card').classList.toggle('open');
   }
 
-  updateUI(progress);
-  animFrame = requestAnimationFrame(tick);
-}
-
-function updateUI(t) {
-  const pos = getPositionAtProgress(t);
-  const pts = getSegmentPoints(t);
-  const stopIdx = getCurrentStopIndex(t);
-  const plan = plans[currentPlan];
-  const stop = plan.stops[stopIdx];
-
-  // Move plane
-  if (planeMarker) planeMarker.setLatLng(pos);
-
-  // Grow line
-  if (animLine) animLine.setLatLngs(pts);
-
-  // Progress bar
-  document.getElementById('progress-fill').style.width = (t * 100) + '%';
-  document.getElementById('progress-label').textContent =
-    `${stop.day} ${stop.time} ｜ ${stop.icon} ${stop.name}`;
-
-  // Current spot
-  document.getElementById('spot-icon').textContent = stop.icon;
-  document.getElementById('spot-name').textContent = stop.name;
-  document.getElementById('spot-desc').textContent = stop.desc;
-  document.getElementById('spot-day').textContent = `${stop.day} ${stop.time}`;
-
-  // Stop dots
-  document.querySelectorAll('.stop-item').forEach((el, i) => {
-    el.classList.remove('active', 'visited');
-    if (i < stopIdx) el.classList.add('visited');
-    else if (i === stopIdx) el.classList.add('active');
-  });
-
-  // Center map on plane
-  if (isPlaying) {
-    map.panTo(pos, { animate: true, duration: 0.3 });
+  /* ---------- PLAN TAB ---------- */
+  function showPlan(planId) {
+    document.querySelectorAll('.plan-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(planId).classList.add('active');
+    const map = {'hakodate-plan':0,'chitose-plan':1,'compare':2};
+    document.querySelectorAll('.toggle-btn').forEach((b,i) => b.classList.toggle('active', i === map[planId]));
+    window.scrollTo({top: document.querySelector('.plan-toggle-wrap').offsetTop - 10, behavior:'smooth'});
   }
-}
 
-// ========== RENDER TIMELINE ==========
-function renderStopsTimeline() {
-  const container = document.getElementById('stops-scroll');
-  container.innerHTML = '';
-  const plan = plans[currentPlan];
-  let prevDay = null;
-  plan.stops.forEach((stop, i) => {
-    if (prevDay && stop.day !== prevDay) {
-      const sep = document.createElement('div');
-      sep.className = 'day-sep';
-      sep.innerHTML = `<div class="day-sep-line"></div><div class="day-sep-label">${stop.day}</div>`;
-      container.appendChild(sep);
+  /* ---------- MAP MODAL ---------- */
+  let leafletMap = null, routeLine = null, animLine = null, planeMarker = null;
+  let animStops = [], allPts = [], animProgress = 0, animPlaying = false;
+  let animRAF = null, animLastTS = null, animDuration = 16000;
+  let currentMapPlan = 'hakodate';
+
+  const mapPlans = {
+    hakodate: {
+      color: '#1565c0',
+      stops: [
+        {lat:41.770, lng:140.822, name:'函館空港',         icon:'✈️', info:'Day1 08:30 集合・レンタカー'},
+        {lat:41.769, lng:140.729, name:'函館朝市',         icon:'🦑', info:'Day1 10:30 どんぶり横丁ランチ'},
+        {lat:41.797, lng:140.757, name:'五稜郭タワー',     icon:'🏯', info:'Day1 14:30 展望台から星型要塞を一望'},
+        {lat:41.758, lng:140.715, name:'函館山ロープウェイ',icon:'🌃', info:'Day1 20:00 世界三大夜景'},
+        {lat:43.195, lng:140.455, name:'お食事処みさき',   icon:'🦔', info:'Day2 09:00 赤バフンウニ丼'},
+        {lat:43.191, lng:140.458, name:'中村屋（積丹）',   icon:'🦔', info:'Day2 11:00 ウニ食べ比べ'},
+        {lat:41.769, lng:140.729, name:'函館（帰還）',     icon:'🏨', info:'Day2 16:30 ホテルで温泉休憩'},
+        {lat:43.191, lng:141.003, name:'小樽三角市場',     icon:'🦀', info:'Day3 10:00 ランチ'},
+        {lat:43.188, lng:140.993, name:'LeTAO / かま栄',  icon:'🧀', info:'Day3 12:30 食べ歩き'},
+        {lat:43.062, lng:141.355, name:'二条市場（札幌）', icon:'🦀', info:'Day3 15:30 つまみ食い'},
+        {lat:43.055, lng:141.352, name:'スープカレー',     icon:'🍛', info:'Day3 17:30 ピカンティ or 奥芝商店'},
+        {lat:43.056, lng:141.351, name:'ラーメン横丁',     icon:'🍜', info:'Day3 20:00 濃厚味噌'},
+        {lat:43.069, lng:141.351, name:'場外市場（札幌）', icon:'🦀', info:'Day4 07:30 朝食・お土産'},
+        {lat:41.769, lng:140.729, name:'函館塩ラーメン',   icon:'🍜', info:'Day4 13:30 旅の最後の〆'},
+        {lat:41.770, lng:140.822, name:'函館空港（帰路）', icon:'✈️', info:'Day4 15:30 帰路フライト'},
+      ]
+    },
+    chitose: {
+      color: '#2e7d32',
+      stops: [
+        {lat:42.775, lng:141.692, name:'新千歳空港',        icon:'✈️', info:'Day1 09:30 集合・レンタカー'},
+        {lat:43.191, lng:141.003, name:'小樽三角市場',      icon:'🦀', info:'Day1 11:00 ランチ'},
+        {lat:43.188, lng:140.993, name:'LeTAO / かま栄',   icon:'🧀', info:'Day1 14:00 食べ歩き'},
+        {lat:43.190, lng:141.002, name:'小樽寿司屋通り',   icon:'🍣', info:'Day1 18:00 夕食'},
+        {lat:43.190, lng:141.001, name:'ジンギスカン（小樽）',icon:'🥩', info:'Day1 20:00 〆ジンギスカン'},
+        {lat:43.195, lng:140.455, name:'お食事処みさき',   icon:'🦔', info:'Day2 09:00 赤バフンウニ丼'},
+        {lat:43.191, lng:140.458, name:'中村屋（積丹）',   icon:'🦔', info:'Day2 11:00 ウニ食べ比べ'},
+        {lat:43.191, lng:141.003, name:'小樽（帰還）',     icon:'🏨', info:'Day2 15:30 ホテルで温泉'},
+        {lat:43.069, lng:141.351, name:'場外市場（札幌）', icon:'🦀', info:'Day3 07:30 朝食・お土産'},
+        {lat:43.060, lng:141.353, name:'町村農場ソフト',   icon:'🍦', info:'Day3 09:30 ¥440の濃厚ソフト'},
+        {lat:41.769, lng:140.729, name:'函館朝市',         icon:'🦑', info:'Day3 14:00 遅ランチ'},
+        {lat:41.797, lng:140.757, name:'五稜郭タワー',     icon:'🏯', info:'Day3 15:30 夕暮れの展望'},
+        {lat:41.758, lng:140.715, name:'函館山ロープウェイ',icon:'🌃', info:'Day3 20:00 世界三大夜景'},
+        {lat:41.769, lng:140.729, name:'函館朝市（最終）', icon:'🦑', info:'Day4 07:00 最終朝食'},
+        {lat:42.775, lng:141.692, name:'新千歳空港（帰路）',icon:'✈️', info:'Day4 16:00 帰路フライト'},
+      ]
     }
-    const el = document.createElement('div');
-    el.className = 'stop-item';
-    el.setAttribute('data-index', i);
-    el.innerHTML = `<div class="stop-dot">${stop.icon}</div><div class="stop-label">${stop.name.replace(/（.+）/, '')}</div>`;
-    el.onclick = () => {
-      pauseAnimation();
-      const n = plan.stops.length - 1;
-      progress = i / n;
-      updateUI(progress);
-      map.setView([stop.lat, stop.lng], 11, { animate: true });
-    };
-    container.appendChild(el);
-    prevDay = stop.day;
-  });
-}
+  };
 
-// ========== RENDER INFO CARDS ==========
-function renderInfoCards() {
-  const plan = plans[currentPlan];
-  const stops = plan.stops;
-
-  // Spots list
-  const sl = document.getElementById('spots-list');
-  sl.innerHTML = '';
-  stops.forEach(s => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${s.icon} ${s.name.replace(/（.+）/, '')}</span><span>${s.day}</span>`;
-    sl.appendChild(li);
-  });
-
-  // Distance
-  const dl = document.getElementById('distance-list');
-  const legs = [
-    { label: '函館プラン: 函館→積丹', km: '約190km', time: '約3時間' },
-    { label: '積丹→小樽', km: '約60km', time: '約1時間' },
-    { label: '小樽→札幌', km: '約40km', time: '約40分' },
-    { label: '札幌→函館', km: '約320km', time: '約3時間30分' },
-  ];
-  if (currentPlan === 'chitose') {
-    legs.splice(0, legs.length,
-      { label: '千歳→小樽', km: '約60km', time: '約1時間' },
-      { label: '小樽→積丹', km: '約60km', time: '約1時間' },
-      { label: '積丹→札幌', km: '約120km', time: '約2時間' },
-      { label: '札幌→函館', km: '約320km', time: '約3時間30分' },
-      { label: '函館→千歳', km: '約270km', time: '約4時間（乗捨）' },
-    );
+  function openMap() {
+    document.getElementById('map-overlay').classList.add('open');
+    if (!leafletMap) {
+      setTimeout(() => {
+        leafletMap = L.map('map-container', {zoomControl:true, scrollWheelZoom:false});
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom:18
+        }).addTo(leafletMap);
+        loadMapPlan('hakodate');
+      }, 100);
+    }
   }
-  dl.innerHTML = '';
-  legs.forEach(l => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${l.label}</span><span>${l.km} / ${l.time}</span>`;
-    dl.appendChild(li);
-  });
-}
 
-// ========== SWITCH PLAN ==========
-function switchPlan(planKey) {
-  pauseAnimation();
-  document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  initPlan(planKey);
-}
+  function closeMap() {
+    document.getElementById('map-overlay').classList.remove('open');
+    mapPause();
+  }
 
-// ========== START ==========
-initPlan('hakodate');
+  function overlayClick(e) {
+    if (e.target === document.getElementById('map-overlay')) closeMap();
+  }
+
+  function loadMapPlan(planKey) {
+    currentMapPlan = planKey;
+    const plan = mapPlans[planKey];
+    if (routeLine) leafletMap.removeLayer(routeLine);
+    if (animLine)  leafletMap.removeLayer(animLine);
+    if (planeMarker) leafletMap.removeLayer(planeMarker);
+
+    animStops = plan.stops;
+    allPts = animStops.map(s => [s.lat, s.lng]);
+
+    // 既存マーカー削除
+    if (leafletMap._stopMarkers) leafletMap._stopMarkers.forEach(m => leafletMap.removeLayer(m));
+    leafletMap._stopMarkers = animStops.map(s => {
+      const icon = L.divIcon({
+        html:`<div style="font-size:20px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));transform:translate(-50%,-50%)">${s.icon}</div>`,
+        iconSize:[28,28], iconAnchor:[14,14], className:''
+      });
+      return L.marker([s.lat,s.lng],{icon}).addTo(leafletMap)
+        .bindPopup(`<b>${s.icon} ${s.name}</b><br><span style="font-size:12px;color:#666">${s.info}</span>`,{maxWidth:180});
+    });
+
+    routeLine = L.polyline(allPts,{color:plan.color,weight:3,opacity:.2,dashArray:'8,6'}).addTo(leafletMap);
+    animLine  = L.polyline([],{color:plan.color,weight:4,opacity:.9}).addTo(leafletMap);
+
+    const planeIcon = L.divIcon({
+      html:`<div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));transform:translate(-50%,-50%)">✈️</div>`,
+      iconSize:[32,32], iconAnchor:[16,16], className:''
+    });
+    planeMarker = L.marker(allPts[0],{icon:planeIcon,zIndexOffset:1000}).addTo(leafletMap);
+
+    leafletMap.fitBounds(L.latLngBounds(allPts).pad(.15));
+    mapReset();
+  }
+
+  function switchMapPlan(planKey, btn) {
+    document.querySelectorAll('.map-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mapPause();
+    animProgress = 0;
+    loadMapPlan(planKey);
+  }
+
+  function getPosAt(t) {
+    const n = allPts.length - 1;
+    const idx = t * n, i = Math.min(Math.floor(idx), n-1), f = idx - i;
+    const a = allPts[i], b = allPts[Math.min(i+1,n)];
+    return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f];
+  }
+
+  function getPtsTo(t) {
+    const n = allPts.length - 1;
+    const idx = t * n, i = Math.min(Math.floor(idx), n-1), f = idx - i;
+    const pts = allPts.slice(0, i+1);
+    const b = allPts[Math.min(i+1,n)];
+    pts.push([allPts[i][0]+(b[0]-allPts[i][0])*f, allPts[i][1]+(b[1]-allPts[i][1])*f]);
+    return pts;
+  }
+
+  function getStopIdx(t) {
+    return Math.min(Math.floor(t * (allPts.length-1)), allPts.length-1);
+  }
+
+  function updateMap(t) {
+    if (!planeMarker || !animLine) return;
+    const pos = getPosAt(t);
+    planeMarker.setLatLng(pos);
+    animLine.setLatLngs(getPtsTo(t));
+    const si = getStopIdx(t);
+    const s = animStops[si];
+    document.getElementById('map-spot-label').textContent = `📍 ${s.icon} ${s.name}　${s.info}`;
+    if (animPlaying) leafletMap.panTo(pos,{animate:true,duration:.5});
+  }
+
+  function mapPlay() {
+    if (animPlaying) return;
+    if (animProgress >= 1) animProgress = 0;
+    animPlaying = true; animLastTS = null;
+    animRAF = requestAnimationFrame(mapTick);
+  }
+
+  function mapPause() {
+    animPlaying = false;
+    if (animRAF) cancelAnimationFrame(animRAF);
+  }
+
+  function mapReset() {
+    mapPause();
+    animProgress = 0;
+    updateMap(0);
+  }
+
+  function mapTick(ts) {
+    if (!animPlaying) return;
+    if (!animLastTS) animLastTS = ts;
+    animProgress += (ts - animLastTS) / animDuration;
+    animLastTS = ts;
+    if (animProgress >= 1) { animProgress = 1; updateMap(1); animPlaying = false; return; }
+    updateMap(animProgress);
+    animRAF = requestAnimationFrame(mapTick);
+  }
 </script>
 </body>
 </html>
