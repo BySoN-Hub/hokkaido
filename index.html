@@ -2,1432 +2,491 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>北海道食べ歩き旅 2026</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🦑 函館たびびより 7/24〜7/27</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root {
-  --primary: #1a3a5c;
-  --accent: #e8a020;
-  --accent2: #2ecc71;
-  --bg: #f0f4f8;
-  --card: #ffffff;
-  --text: #2c3e50;
-  --muted: #7f8c8d;
-  --border: #dce3ea;
-  --shadow: 0 4px 20px rgba(0,0,0,0.10);
-  --radius: 16px;
-  --radius-sm: 8px;
+  --pink:#ff6b9d; --yellow:#ffda3d; --mint:#3dddc7; --sky:#60b8f5;
+  --orange:#ff8c42; --purple:#b06bff; --navy:#1a1a3e;
+  --white:#fffdf5; --soft:#fff8e8;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Hiragino Kaku Gothic ProN','Meiryo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;border:none;background:none;font-family:inherit}
+html { font-size:16px; }
+body { background:var(--white); color:var(--navy); font-family:'Zen Maru Gothic',sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
 
-/* ===== HERO ===== */
-.hero{background:linear-gradient(135deg,#0d2137 0%,#1a3a5c 45%,#0077b6 80%,#00b4d8 100%);color:#fff;padding:56px 20px 48px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.hero-eyebrow{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;opacity:.75;margin-bottom:10px}
-.hero h1{font-size:clamp(1.7rem,5vw,2.8rem);font-weight:800;line-height:1.2;margin-bottom:8px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
-.hero-sub{font-size:1rem;opacity:.85;margin-bottom:20px}
-.hero-dates{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:50px;padding:6px 20px;font-size:.9rem;margin-bottom:24px;backdrop-filter:blur(4px)}
-.hero-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:28px}
-.badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:50px;padding:5px 14px;font-size:.8rem;backdrop-filter:blur(4px)}
-.btn-map{background:var(--accent);color:#fff;padding:12px 28px;border-radius:50px;font-size:.95rem;font-weight:700;box-shadow:0 4px 15px rgba(232,160,32,.4);transition:transform .2s,box-shadow .2s}
-.btn-map:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(232,160,32,.5)}
+/* HERO */
+.hero { background:var(--navy); position:relative; overflow:hidden; display:flex; flex-direction:column; }
+.hero-bg-blobs { position:absolute; inset:0; z-index:0; overflow:hidden; }
+.blob { position:absolute; border-radius:50%; filter:blur(40px); opacity:.35; }
+.blob1{width:260px;height:260px;background:var(--pink);top:-60px;left:-40px;}
+.blob2{width:220px;height:220px;background:var(--mint);top:30px;right:-30px;}
+.blob3{width:160px;height:160px;background:var(--yellow);bottom:20px;left:40%;}
+.hero-content { position:relative; z-index:1; padding:40px 20px 36px; }
+.hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--yellow); color:var(--navy); font-size:10px; font-weight:900; letter-spacing:2px; padding:6px 14px; border-radius:99px; margin-bottom:20px; }
+.hero h1 { font-size:clamp(52px,16vw,80px); font-weight:900; color:#fff; line-height:1.0; margin-bottom:8px; }
+.hero h1 .accent  { color:var(--yellow); }
+.hero h1 .accent2 { color:var(--mint); }
+.hero-sub { color:rgba(255,255,255,0.6); font-size:13px; margin-bottom:24px; }
+.dates-strip { display:flex; gap:8px; flex-wrap:wrap; }
+.date-pill { background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); color:#fff; font-size:11px; font-weight:700; padding:7px 13px; border-radius:99px; }
+.wave-divider { display:block; width:100%; height:48px; margin-top:-1px; }
 
-/* ===== STICKY TOGGLE ===== */
-.plan-toggle{position:sticky;top:0;z-index:100;background:var(--primary);display:flex;border-bottom:3px solid var(--accent);overflow-x:auto}
-.plan-toggle button{flex:1;min-width:120px;padding:14px 10px;color:rgba(255,255,255,.65);font-size:.85rem;font-weight:600;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-3px}
-.plan-toggle button.active{color:#fff;border-bottom-color:var(--accent);background:rgba(255,255,255,.08)}
-.plan-toggle button:hover:not(.active){color:#fff;background:rgba(255,255,255,.05)}
+/* FLIGHTS */
+.flights-section { background:var(--soft); padding:36px 20px; }
+.section-heading { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.section-heading .emoji { font-size:26px; }
+.section-heading h2 { font-size:20px; font-weight:900; color:var(--navy); }
+.flight-block { margin-bottom:20px; }
+.flight-block-label { font-size:11px; font-weight:900; letter-spacing:2px; color:var(--navy); opacity:.5; margin-bottom:10px; }
+.flight-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.flight-card { border-radius:16px; padding:16px 14px; color:#fff; position:relative; overflow:hidden; }
+.flight-card.go   { background:linear-gradient(135deg,var(--sky),var(--purple)); }
+.flight-card.back { background:linear-gradient(135deg,var(--orange),var(--pink)); }
+.flight-card.go2  { background:linear-gradient(135deg,#3db8b0,#1a7aad); }
+.flight-card.back2{ background:linear-gradient(135deg,#e07b40,#c44f84); }
+.flight-card::after { content:'✈'; position:absolute; right:10px; bottom:6px; font-size:44px; opacity:.1; transform:rotate(10deg); }
+.fc-label { font-size:9px; font-weight:900; letter-spacing:2px; opacity:.75; margin-bottom:6px; }
+.fc-times { font-size:20px; font-weight:900; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.fc-arrow { opacity:.6; font-size:14px; }
+.fc-route { font-size:10px; opacity:.8; margin-bottom:7px; line-height:1.5; }
+.fc-price { display:inline-block; background:rgba(255,255,255,.22); padding:3px 10px; border-radius:99px; font-size:11px; font-weight:700; }
+.alert-box { background:var(--yellow); border-radius:16px; padding:14px 16px; margin-top:16px; font-size:12px; font-weight:500; color:var(--navy); line-height:1.9; border:2.5px solid var(--navy); box-shadow:3px 3px 0 var(--navy); }
+.alert-box strong { font-weight:900; }
+.divider-line { border:none; border-top:2px dashed rgba(0,0,0,.1); margin:20px 0; }
 
-/* ===== PLAN SECTIONS ===== */
-.plan-section{display:none;animation:fadeIn .3s ease}
-.plan-section.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.container{max-width:860px;margin:0 auto;padding:0 16px}
+/* DAYS */
+.days-section { padding:40px 20px 48px; }
+.day-block { margin-bottom:52px; }
+.day-header-row { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+.day-badge { width:58px; height:58px; border-radius:16px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:900; border:2.5px solid var(--navy); box-shadow:2.5px 2.5px 0 var(--navy); }
+.day-badge.d1{background:var(--pink);}
+.day-badge.d2{background:var(--mint);}
+.day-badge.d3{background:var(--yellow);}
+.day-badge.d4{background:var(--sky);}
+.day-badge .num{font-size:20px;line-height:1;}
+.day-badge .word{font-size:8px;letter-spacing:1px;opacity:.65;}
+.day-title h2{font-size:17px;font-weight:900;color:var(--navy);line-height:1.35;}
+.day-title .ddate{font-size:11px;color:#888;margin-top:2px;}
 
-/* ===== SECTION HEADER ===== */
-.section-header{padding:32px 0 16px;text-align:center}
-.section-header h2{font-size:1.5rem;font-weight:800;color:var(--primary);display:flex;align-items:center;justify-content:center;gap:8px}
-.section-header p{color:var(--muted);margin-top:6px;font-size:.9rem}
+/* EVENTS */
+.events { display:flex; flex-direction:column; gap:10px; }
+.ecard { border-radius:14px; padding:14px; border:2px solid transparent; display:flex; gap:12px; align-items:flex-start; background:#fff; box-shadow:2px 2px 0 rgba(0,0,0,.05); text-decoration:none; color:inherit; transition:transform .12s,box-shadow .12s; }
+.ecard:active{transform:scale(.98);}
+.ecard.hi{border-color:var(--navy);box-shadow:3px 3px 0 var(--navy);}
+.ecard.c-food  {background:#fff5f9;}
+.ecard.c-sight {background:#f0fbff;}
+.ecard.c-cafe  {background:#fffbf0;}
+.ecard.c-bar   {background:#f5f0ff;}
+.ecard.c-flight{background:#f0f8ff;}
+.ecard.c-hotel {background:#f5fff5;}
+.ecard.c-curry {background:#fff8f0;}
+.ecard-icon{font-size:26px;flex-shrink:0;margin-top:1px;line-height:1;}
+.ecard-body{flex:1;min-width:0;}
+.ecard-time{font-size:10px;font-weight:700;letter-spacing:.5px;color:#aaa;margin-bottom:3px;}
+.ecard.hi .ecard-time{color:var(--pink);}
+.ecard-name{font-size:14px;font-weight:900;color:var(--navy);margin-bottom:5px;line-height:1.35;}
+.ecard-note{font-size:12px;color:#666;line-height:1.75;}
+.ecard-note strong{color:var(--navy);font-weight:900;}
+.ecard-dessert{margin-top:7px;background:rgba(255,218,61,.15);border-radius:8px;padding:7px 10px;font-size:11px;color:#7a6000;line-height:1.7;border-left:3px solid var(--yellow);}
+.ecard-dessert::before{content:'🍰 ';font-size:12px;}
+.ecard-link{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:11px;font-weight:700;color:var(--sky);text-decoration:none;background:rgba(96,184,245,.1);padding:4px 10px;border-radius:99px;border:1.5px solid rgba(96,184,245,.3);}
+.ecard-link::after{content:'→';}
+.tag{display:inline-block;font-size:8px;font-weight:900;letter-spacing:1px;padding:2px 8px;border-radius:99px;margin-left:5px;vertical-align:middle;border:1.5px solid var(--navy);}
+.tag.food  {background:var(--pink);   color:var(--navy);}
+.tag.sight {background:var(--mint);   color:var(--navy);}
+.tag.cafe  {background:var(--yellow); color:var(--navy);}
+.tag.bar   {background:var(--purple); color:#fff; border-color:var(--purple);}
+.tag.flight{background:var(--sky);    color:var(--navy);}
+.tag.hotel {background:#b2f7b2;       color:var(--navy);}
+.tag.curry {background:var(--orange); color:#fff; border-color:var(--orange);}
+.squiggly{text-align:center;font-size:20px;letter-spacing:3px;opacity:.25;margin:4px 0 28px;}
 
-/* ===== FLIGHT PANEL ===== */
-.flight-panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:24px}
-.flight-panel h3{font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:6px}
-.flight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.flight-card{background:var(--bg);border-radius:var(--radius-sm);padding:14px;border-left:4px solid var(--accent)}
-.flight-card .route{font-weight:700;font-size:.95rem;margin-bottom:4px}
-.flight-card .price{color:var(--accent);font-weight:800;font-size:1.05rem}
-.flight-card .airline{color:var(--muted);font-size:.78rem;margin-top:4px}
-.btn-link{display:inline-block;margin-top:8px;background:var(--primary);color:#fff;padding:5px 12px;border-radius:50px;font-size:.75rem;font-weight:600}
+/* WARNINGS */
+.warnings-section{background:var(--navy);padding:40px 20px;}
+.warnings-section .section-heading h2{color:#fff;}
+.warn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;}
+.wcard{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;}
+.wcard .wicon{font-size:22px;margin-bottom:8px;}
+.wcard strong{display:block;font-size:12px;font-weight:900;color:#fff;margin-bottom:4px;}
+.wcard p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.7;}
 
-/* ===== DAY CARDS ===== */
-.day-label{display:flex;align-items:center;gap:12px;margin:24px 0 12px;padding:0 4px}
-.day-label .day-num{background:var(--primary);color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;flex-shrink:0}
-.day-label .day-title{font-weight:700;font-size:1rem;color:var(--primary)}
-.day-label .day-date{color:var(--muted);font-size:.8rem}
+/* FOOTER */
+footer{background:var(--navy);border-top:1px solid rgba(255,255,255,.08);padding:28px 20px;text-align:center;}
+.footer-logo{font-size:18px;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;}
+.footer-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);}
+footer p{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.5px;}
 
-.timeline{position:relative;padding-left:20px}
-.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2))}
-.tl-item{position:relative;background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.07);transition:transform .15s}
-.tl-item:hover{transform:translateX(2px)}
-.tl-item::before{content:'';position:absolute;left:-24px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent)}
-.tl-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
-.tl-time{font-size:.78rem;font-weight:700;color:var(--muted);min-width:50px}
-.tl-icon{font-size:1.2rem}
-.tl-name{font-weight:700;font-size:.95rem;color:var(--primary)}
-.tl-tags{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
-.tag{font-size:.68rem;padding:2px 8px;border-radius:50px;font-weight:600}
-.tag-food{background:#fef3cd;color:#b7791f}
-.tag-move{background:#dbeafe;color:#1e40af}
-.tag-sight{background:#d1fae5;color:#065f46}
-.tag-hotel{background:#ede9fe;color:#5b21b6}
-.tag-short{background:#dcfce7;color:#166534}
-.tag-long{background:#ffedd5;color:#9a3412}
-.tl-desc{font-size:.85rem;color:var(--text);line-height:1.6;margin-bottom:6px}
-.tl-links{display:flex;gap:6px;flex-wrap:wrap}
-.tl-link{font-size:.75rem;background:var(--bg);border:1px solid var(--border);border-radius:50px;padding:3px 10px;color:var(--primary);transition:background .15s}
-.tl-link:hover{background:var(--primary);color:#fff}
-
-/* ===== HOTEL ===== */
-.hotel-section{background:var(--card);border-radius:var(--radius);padding:20px;margin:16px 0 24px;box-shadow:var(--shadow)}
-.hotel-section h3{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:14px;display:flex;align-items:center;gap:6px}
-.hotel-list{display:grid;gap:10px}
-.hotel-item{background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.hotel-info .hotel-name{font-weight:700;font-size:.9rem;margin-bottom:3px}
-.hotel-info .hotel-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
-.hotel-price{font-size:.95rem;font-weight:800;color:var(--accent);white-space:nowrap}
-.hotel-stars{color:var(--accent);font-size:.8rem;margin-bottom:2px}
-
-/* ===== COMPARISON ===== */
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-.compare-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;border-top:4px solid var(--accent)}
-.compare-card:last-child{border-top-color:var(--accent2)}
-.compare-card h3{font-size:1rem;font-weight:800;margin-bottom:16px;color:var(--primary);display:flex;align-items:center;gap:6px}
-.compare-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;gap:8px}
-.compare-row:last-child{border-bottom:none}
-.compare-row .label{color:var(--muted);flex-shrink:0}
-.compare-row .val{font-weight:700;text-align:right}
-.verdict{background:linear-gradient(135deg,#1a3a5c,#0077b6);color:#fff;border-radius:var(--radius);padding:20px;margin:16px 0;text-align:center}
-.verdict h3{font-size:1.05rem;margin-bottom:8px}
-.verdict p{font-size:.88rem;opacity:.9;line-height:1.6}
-
-/* ===== COST TABLE ===== */
-.cost-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:24px}
-.cost-table th{background:var(--primary);color:#fff;padding:11px 14px;font-size:.82rem;text-align:left}
-.cost-table td{padding:11px 14px;font-size:.85rem;border-bottom:1px solid var(--border)}
-.cost-table tr:last-child td{border-bottom:none;font-weight:700;background:#fefce8}
-.cost-table tr:hover td{background:#f8fafc}
-
-/* ===== TIPS ===== */
-.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:32px}
-.tip-card{background:var(--card);border-radius:var(--radius-sm);padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.07);border-top:3px solid var(--accent)}
-.tip-card .tip-icon{font-size:1.8rem;margin-bottom:8px}
-.tip-card .tip-title{font-weight:700;font-size:.85rem;color:var(--primary);margin-bottom:4px}
-.tip-card .tip-body{font-size:.78rem;color:var(--muted);line-height:1.5}
-
-/* ===== NEW IDEA CARDS ===== */
-.ideas-section{background:linear-gradient(135deg,#0d2137,#1a3a5c);color:#fff;padding:32px 20px;margin:0 0 32px}
-.ideas-section h2{text-align:center;font-size:1.3rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:8px}
-.ideas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;max-width:860px;margin:0 auto}
-.idea-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);padding:18px;backdrop-filter:blur(4px);transition:transform .2s,background .2s}
-.idea-card:hover{transform:translateY(-3px);background:rgba(255,255,255,.16)}
-.idea-card .idea-icon{font-size:2rem;margin-bottom:8px}
-.idea-card .idea-title{font-weight:700;font-size:.9rem;margin-bottom:6px}
-.idea-card .idea-desc{font-size:.78rem;opacity:.85;line-height:1.5}
-
-/* ===== MAP MODAL ===== */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:999;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--card);border-radius:var(--radius);width:100%;max-width:820px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.modal-header{background:var(--primary);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
-.modal-header h3{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:6px}
-.modal-tabs{display:flex;gap:4px;margin-top:6px}
-.modal-tab{background:rgba(255,255,255,.15);color:rgba(255,255,255,.75);padding:4px 14px;border-radius:50px;font-size:.78rem;font-weight:600;transition:all .2s}
-.modal-tab.active{background:var(--accent);color:#fff}
-.modal-close{background:rgba(255,255,255,.15);color:#fff;border-radius:50%;width:30px;height:30px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.modal-close:hover{background:rgba(255,255,255,.3)}
-.modal-body{flex:1;overflow:hidden;display:flex;flex-direction:column}
-#map{flex:1;min-height:380px}
-.map-controls{background:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid var(--border)}
-.map-controls button{background:var(--primary);color:#fff;border-radius:var(--radius-sm);padding:6px 14px;font-size:.8rem;font-weight:600}
-.map-controls select{border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 10px;font-size:.8rem}
-.progress-bar{flex:1;height:8px;background:var(--border);border-radius:4px;cursor:pointer;min-width:80px}
-.progress-fill{height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width .1s}
-.spot-label{font-size:.8rem;color:var(--primary);font-weight:600;min-width:160px}
-
-/* ===== FOOTER ===== */
-footer{background:var(--primary);color:rgba(255,255,255,.65);text-align:center;padding:24px 16px;font-size:.78rem;line-height:1.8}
-footer a{color:var(--accent)}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:640px){
-  .flight-grid,.compare-grid{grid-template-columns:1fr}
-  .hero h1{font-size:1.6rem}
-  .tips-grid,.ideas-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:400px){
-  .tips-grid,.ideas-grid{grid-template-columns:1fr}
+@supports(padding:max(0px)){
+  .hero-content,.flights-section,.days-section,.warnings-section,footer{
+    padding-left:max(20px,env(safe-area-inset-left));
+    padding-right:max(20px,env(safe-area-inset-right));
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- ===== HERO ===== -->
-<div class="hero">
-  <div class="hero-eyebrow">🗾 北海道グルメ旅プランナー</div>
-  <h1>🦀 北海道食べ歩き旅 2026</h1>
-  <div class="hero-sub">海鮮・ラーメン・スープカレー・ジンギスカン全部食べる旅</div>
-  <div class="hero-dates">📅 2026年7月24日（金）〜 7月27日（月）3泊4日</div>
-  <div class="hero-badges">
-    <span class="badge">🦞 海鮮丼</span>
-    <span class="badge">🍜 ラーメン</span>
-    <span class="badge">🍛 スープカレー</span>
-    <span class="badge">🐑 ジンギスカン</span>
-    <span class="badge">🍦 ソフトクリーム</span>
-    <span class="badge">⭐ 五稜郭</span>
-    <span class="badge">🚗 レンタカー</span>
-    <span class="badge">🌊 積丹ブルー</span>
-  </div>
-  <button class="btn-map" onclick="openModal()">🗺️ ルートマップを見る</button>
-</div>
-
-<!-- ===== PLAN TOGGLE ===== -->
-<div class="plan-toggle">
-  <button class="active" onclick="switchPlan('hakodate',this)">✈️ 函館IN/OUTプラン</button>
-  <button onclick="switchPlan('chitose',this)">🛫 新千歳IN/OUTプラン</button>
-  <button onclick="switchPlan('compare',this)">⚖️ プラン比較</button>
-</div>
-
-<!-- ============================= -->
-<!-- ===== 函館 IN/OUT プラン ===== -->
-<!-- ============================= -->
-<div id="plan-hakodate" class="plan-section active">
-<div class="container">
-
-  <div class="section-header">
-    <h2>✈️ 函館IN/OUTプラン</h2>
-    <p>函館を拠点に道南・道央を楽しむ3泊4日。五稜郭・夜景・海鮮全部コンプリート</p>
-  </div>
-
-  <!-- FLIGHT -->
-  <div class="flight-panel">
-    <h3>✈️ フライト情報</h3>
-    <div class="flight-grid">
-      <div class="flight-card">
-        <div class="route">🛫 羽田 → 函館</div>
-        <div class="price">¥18,000〜 往復</div>
-        <div class="airline">ANA / JAL / AIR DO</div>
-        <a class="btn-link" href="https://www.airdo.jp/" target="_blank">AIR DO予約</a>
-      </div>
-      <div class="flight-card">
-        <div class="route">🛫 中部 → 函館</div>
-        <div class="price">¥23,000〜 往復</div>
-        <div class="airline">ANA / JAL 乗継便</div>
-        <a class="btn-link" href="https://www.ana.co.jp/" target="_blank">ANA予約</a>
-      </div>
-    </div>
-    <p style="font-size:.78rem;color:var(--muted);margin-top:12px">💡 早割・LCCを使うとさらに安くなる場合あり。スカイスキャナーで比較推奨。</p>
-    <a class="btn-link" href="https://www.skyscanner.jp/" target="_blank" style="margin-top:8px">スカイスキャナーで比較</a>
-  </div>
-
-  <!-- DAY 1 -->
-  <div class="day-label">
-    <div class="day-num">D1</div>
-    <div>
-      <div class="day-title">函館到着・朝市・夜景</div>
-      <div class="day-date">7月24日（金）</div>
+<header class="hero">
+  <div class="hero-bg-blobs"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">🦑 HAKODATE TRIP 2025</div>
+    <h1>函館<br><span class="accent">グルメ</span><br><span class="accent2">旅行！</span></h1>
+    <p class="hero-sub">友達と行く北海道3泊4日 🍜🐟🍔</p>
+    <div class="dates-strip">
+      <span class="date-pill">✈ 7/24 Thu 出発</span>
+      <span class="date-pill">⭐ 7/25 Fri 五稜郭</span>
+      <span class="date-pill">☕ 7/26 Sat カフェ巡り</span>
+      <span class="date-pill">🏠 7/27 Sun 帰路</span>
     </div>
   </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">08:00</span>
-        <span class="tl-icon">✈️</span>
-        <span class="tl-name">函館空港 到着・レンタカーPU</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span></div>
+  <svg class="wave-divider" viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,24 C240,48 480,0 720,24 C960,48 1200,0 1440,24 L1440,48 L0,48 Z" fill="#fffdf5"/>
+  </svg>
+</header>
+
+<!-- FLIGHTS -->
+<section class="flights-section">
+  <div class="section-heading"><span class="emoji">✈️</span><h2>フライト（確定済！）</h2></div>
+
+  <div class="flight-block">
+    <p class="flight-block-label">🧑 自分（秦野）</p>
+    <div class="flight-cards">
+      <div class="flight-card go">
+        <div class="fc-label">往路 7/24</div>
+        <div class="fc-times"><span>14:40</span><span class="fc-arrow">→</span><span>16:00</span></div>
+        <div class="fc-route">羽田 → 函館<br>約1h20m</div>
+        <div class="fc-price">¥12,000</div>
       </div>
-      <div class="tl-desc">函館空港に到着。荷物受け取り後、すぐレンタカーをピックアップ。空港から市内中心部まで約15分。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://rent.toyota.co.jp/" target="_blank">トヨタレンタカー</a>
-        <a class="tl-link" href="https://www.nissan-rentacar.com/" target="_blank">日産レンタカー</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">09:00</span>
-        <span class="tl-icon">🦞</span>
-        <span class="tl-name">函館朝市・どんぶり横丁</span>
-        <div class="tl-tags"><span class="tag tag-food">海鮮</span></div>
-      </div>
-      <div class="tl-desc">北海道随一の朝市。ウニ・イクラ・カニの海鮮丼をぜひ。早朝から開いているので到着直後に行けるのが函館プランの強み。活イカ釣りも楽しい。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.hakodate-asaichi.com/" target="_blank">函館朝市公式</a>
-        <a class="tl-link" href="https://donburiyokocho.com/" target="_blank">どんぶり横丁</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">11:00</span>
-        <span class="tl-icon">⭐</span>
-        <span class="tl-name">五稜郭タワー・五稜郭公園</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span></div>
-      </div>
-      <div class="tl-desc">幕末の歴史が息づく星形要塞。タワー展望台からの俯瞰が絶景。7月は涼しい朝イチがベスト。徒歩で公園内も散策しよう。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.goryokaku-tower.co.jp/" target="_blank">五稜郭タワー</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">13:00</span>
-        <span class="tl-icon">🍔</span>
-        <span class="tl-name">ラッキーピエロでランチ</span>
-        <div class="tl-tags"><span class="tag tag-food">ご当地B級</span></div>
-      </div>
-      <div class="tl-desc">函館ローカルの聖地「ラッキーピエロ」。チャイニーズチキンバーガーが激うま。行列必至だが回転は速い。函館にしかない体験なのでぜひ。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://luckypierrot.jp/" target="_blank">ラッキーピエロ公式</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">15:00</span>
-        <span class="tl-icon">🏘️</span>
-        <span class="tl-name">元町・西洋館エリア散策</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span></div>
-      </div>
-      <div class="tl-desc">異国情緒たっぷりの坂道エリア。旧函館区公会堂や金森赤レンガ倉庫を散策。ソフトクリームやスイーツも充実。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.hakodate-kanemori.com/" target="_blank">金森赤レンガ倉庫</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">18:30</span>
-        <span class="tl-icon">🍜</span>
-        <span class="tl-name">函館ラーメン横丁</span>
-        <div class="tl-tags"><span class="tag tag-food">ラーメン</span></div>
-      </div>
-      <div class="tl-desc">塩ラーメンで有名な函館ラーメン。透き通った黄金色のスープが絶品。人気店「星龍軒」「あじさい」など。夕食前のちょい食いにも最適。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.hakodate-ramen.com/" target="_blank">函館ラーメン情報</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">20:00</span>
-        <span class="tl-icon">🌃</span>
-        <span class="tl-name">函館山 夜景（世界三大夜景）</span>
-        <div class="tl-tags"><span class="tag tag-sight">夜景</span></div>
-      </div>
-      <div class="tl-desc">世界三大夜景のひとつ。7月は夜でも比較的暖かく最高のコンディション。ロープウェイで山頂へ。混雑するので早めに並ぼう。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://334.co.jp/" target="_blank">函館山ロープウェイ</a>
+      <div class="flight-card back">
+        <div class="fc-label">復路 7/27</div>
+        <div class="fc-times"><span>16:45</span><span class="fc-arrow">→</span><span>18:10</span></div>
+        <div class="fc-route">函館 → 羽田<br>約1h25m</div>
+        <div class="fc-price">¥15,410</div>
       </div>
     </div>
   </div>
 
-  <div class="hotel-section">
-    <h3>🏨 Day1宿泊：函館おすすめホテル</h3>
-    <div class="hotel-list">
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★★</div>
-          <div class="hotel-name">函館国際ホテル</div>
-          <div class="hotel-desc">函館駅前。朝食の海鮮バイキングが絶品。夜景も楽しめる高層階あり</div>
-        </div>
-        <div class="hotel-price">¥18,000〜/人</div>
+  <hr class="divider-line">
+
+  <div class="flight-block">
+    <p class="flight-block-label">👫 友達（愛知）</p>
+    <div class="flight-cards">
+      <div class="flight-card go2">
+        <div class="fc-label">往路 7/24</div>
+        <div class="fc-times"><span>16:05</span><span class="fc-arrow">→</span><span>17:35</span></div>
+        <div class="fc-route">名古屋(中部) → 函館<br>約1h30m</div>
       </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★</div>
-          <div class="hotel-name">ラビスタ函館ベイ</div>
-          <div class="hotel-desc">金森赤レンガ倉庫隣。朝食バイキングが人気。ベイエリア観光に便利</div>
-        </div>
-        <div class="hotel-price">¥15,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★</div>
-          <div class="hotel-name">函館皆来ホテル</div>
-          <div class="hotel-desc">コスパ重視。朝市まで徒歩5分。清潔感ありビジネス利用にも◎</div>
-        </div>
-        <div class="hotel-price">¥8,000〜/人</div>
+      <div class="flight-card back2">
+        <div class="fc-label">復路 7/27</div>
+        <div class="fc-times"><span>13:20</span><span class="fc-arrow">→</span><span>14:55</span></div>
+        <div class="fc-route">函館 → 名古屋(中部)<br>約1h35m</div>
       </div>
     </div>
   </div>
 
-  <!-- DAY 2 -->
-  <div class="day-label">
-    <div class="day-num">D2</div>
-    <div>
-      <div class="day-title">大沼国定公園・湯の川温泉・ジンギスカン</div>
-      <div class="day-date">7月25日（土）</div>
-    </div>
+  <div class="alert-box">
+    ⚡ <strong>合流・解散ポイント！</strong><br>
+    ・7/24 合流：自分が16:00着、友達が17:35着 → <strong>友達の到着を空港で待って一緒にホテルへ</strong>🤝<br>
+    ・7/27 解散：友達は13:20発 → <strong>11:30〜11:45には空港着が必要</strong>。朝市で別れてそれぞれ空港へ<br>
+    ・自分は16:45発 → 15:00〜15:30に空港着でOK
   </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">08:30</span>
-        <span class="tl-icon">🌲</span>
-        <span class="tl-name">大沼国定公園 サイクリング・遊覧</span>
-        <div class="tl-tags"><span class="tag tag-sight">自然</span><span class="tag tag-short">近距離30km</span></div>
-      </div>
-      <div class="tl-desc">駒ヶ岳を背景にした絶景湖。レンタサイクルでぐるっと一周約18km。カヌー体験も人気。夏の青空と水面の反射が美しい穴場スポット。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://onuma-koen.jp/" target="_blank">大沼国定公園</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">11:00</span>
-        <span class="tl-icon">🐑</span>
-        <span class="tl-name">ジンギスカン（函館郊外）</span>
-        <div class="tl-tags"><span class="tag tag-food">ジンギスカン</span></div>
-      </div>
-      <div class="tl-desc">旅のジンギスカンは今日だけ！函館近郊の老舗で。生ラム・タレ・野菜を一気に楽しむ北海道グルメの真髄。ランチ営業のある店を事前に予約推奨。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">14:00</span>
-        <span class="tl-icon">♨️</span>
-        <span class="tl-name">湯の川温泉 日帰り入浴</span>
-        <div class="tl-tags"><span class="tag tag-sight">温泉</span></div>
-      </div>
-      <div class="tl-desc">函館近郊の温泉地。食後のリラックスに最適。海が見える露天風呂が◎。疲労回復にぴったり。翌日に備えてしっかり休もう。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.hakodate-yuno.net/" target="_blank">湯の川温泉旅館組合</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">17:00</span>
-        <span class="tl-icon">🦀</span>
-        <span class="tl-name">函館市内 海鮮居酒屋ディナー</span>
-        <div class="tl-tags"><span class="tag tag-food">海鮮</span></div>
-      </div>
-      <div class="tl-desc">函館の夜は海鮮居酒屋で締める。活いか刺し・毛ガニ・ホタテバター焼きをビールと共に。地元民御用達の路地裏名店が狙い目。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">21:00</span>
-        <span class="tl-icon">🍦</span>
-        <span class="tl-name">ソフトクリーム締め</span>
-        <div class="tl-tags"><span class="tag tag-food">スイーツ</span></div>
-      </div>
-      <div class="tl-desc">北海道産ミルクを使ったソフトクリームで一日を締める。「ミルキッシモ」「函館塩ソフト」など個性派も多い。</div>
-    </div>
-  </div>
+</section>
 
-  <div class="hotel-section">
-    <h3>🏨 Day2宿泊：函館（連泊）</h3>
-    <div class="hotel-list">
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★★</div>
-          <div class="hotel-name">湯の川プリンスホテル渚亭</div>
-          <div class="hotel-desc">海が見える露天風呂付き客室あり。夕食のカニ会席が絶品。記念日旅行に◎</div>
-        </div>
-        <div class="hotel-price">¥28,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★</div>
-          <div class="hotel-name">湯の川観光ホテル祥苑</div>
-          <div class="hotel-desc">温泉と海鮮バイキングが人気。リーズナブルに温泉旅が楽しめる</div>
-        </div>
-        <div class="hotel-price">¥14,000〜/人</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DAY 3 -->
-  <div class="day-label">
-    <div class="day-num">D3</div>
-    <div>
-      <div class="day-title">松前城・函館→札幌ドライブ</div>
-      <div class="day-date">7月26日（日）</div>
-    </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">08:00</span>
-        <span class="tl-icon">🏯</span>
-        <span class="tl-name">松前城（オプション）</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span><span class="tag tag-long">遠距離90km</span></div>
-      </div>
-      <div class="tl-desc">北海道唯一の日本式天守閣。函館から約90分。松前海峡の眺めが素晴らしい。時間に余裕があれば立ち寄りたい穴場スポット。スキップしてゆっくり朝食でもOK。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">10:00</span>
-        <span class="tl-icon">🚗</span>
-        <span class="tl-name">函館→長万部→洞爺湖ドライブ</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span><span class="tag tag-long">約230km/3h</span></div>
-      </div>
-      <div class="tl-desc">道央自動車道経由で一気に北上。途中の長万部でかにめしを食べるのが鉄板コース。洞爺湖SAからの眺めも絶景。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">12:30</span>
-        <span class="tl-icon">🦀</span>
-        <span class="tl-name">長万部 かにめし（ドライブ途中）</span>
-        <div class="tl-tags"><span class="tag tag-food">ご当地グルメ</span></div>
-      </div>
-      <div class="tl-desc">長万部の「かなや」のかにめしは全国的に有名。駅弁として全国に名を馳せる名物。ドライブルートの途中で寄り道しやすい。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">15:00</span>
-        <span class="tl-icon">🌋</span>
-        <span class="tl-name">洞爺湖・昭和新山（オプション）</span>
-        <div class="tl-tags"><span class="tag tag-sight">自然</span></div>
-      </div>
-      <div class="tl-desc">カルデラ湖の絶景。昭和新山の噴煙、湖畔のソフトクリームも外せない。時間に余裕があれば遊覧船もおすすめ。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.toyako-dc.jp/" target="_blank">洞爺湖観光</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">17:30</span>
-        <span class="tl-icon">🏙️</span>
-        <span class="tl-name">札幌 チェックイン</span>
-        <div class="tl-tags"><span class="tag tag-hotel">宿泊</span></div>
-      </div>
-      <div class="tl-desc">洞爺湖から札幌まで約1時間30分。早めにチェックインしてすすきのへ繰り出そう。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">19:00</span>
-        <span class="tl-icon">🍛</span>
-        <span class="tl-name">札幌スープカレー</span>
-        <div class="tl-tags"><span class="tag tag-food">スープカレー</span></div>
-      </div>
-      <div class="tl-desc">札幌発祥のスープカレー。「GARAKU」「奥芝商店」「マジックスパイス」などの名店で。辛さレベルを選べるのが楽しい。人気店は予約必須。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://garaku.jp/" target="_blank">GARAKU</a>
-        <a class="tl-link" href="https://okushiba.com/" target="_blank">奥芝商店</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">21:00</span>
-        <span class="tl-icon">🍺</span>
-        <span class="tl-name">すすきの 締めパフェ文化体験</span>
-        <div class="tl-tags"><span class="tag tag-food">スイーツ</span></div>
-      </div>
-      <div class="tl-desc">札幌では食後に「締めパフェ」が文化。夜中でもパフェを食べる北海道スタイルを体験しよう。北海道産ミルクを使った本格パフェが多数。</div>
-    </div>
-  </div>
-
-  <div class="hotel-section">
-    <h3>🏨 Day3宿泊：札幌おすすめホテル</h3>
-    <div class="hotel-list">
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★★</div>
-          <div class="hotel-name">JRタワーホテル日航札幌</div>
-          <div class="hotel-desc">JR札幌駅直結。35階以上の眺望が抜群。朝食ビュッフェも充実</div>
-        </div>
-        <div class="hotel-price">¥20,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★</div>
-          <div class="hotel-name">ホテルモントレ札幌</div>
-          <div class="hotel-desc">すすきの駅徒歩3分。欧州スタイルのインテリアが人気。コスパ◎</div>
-        </div>
-        <div class="hotel-price">¥12,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★</div>
-          <div class="hotel-name">ドーミーイン札幌</div>
-          <div class="hotel-desc">大浴場あり。夜鳴きそばサービスが名物。ビジネスにも観光にも◎</div>
-        </div>
-        <div class="hotel-price">¥9,000〜/人</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DAY 4 -->
-  <div class="day-label">
-    <div class="day-num">D4</div>
-    <div>
-      <div class="day-title">小樽・積丹 → 函館空港で帰宅</div>
-      <div class="day-date">7月27日（月）</div>
-    </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">07:00</span>
-        <span class="tl-icon">🚗</span>
-        <span class="tl-name">札幌→小樽ドライブ</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span><span class="tag tag-short">40km/40min</span></div>
-      </div>
-      <div class="tl-desc">朝イチで小樽へ。早朝の小樽運河が静かで美しい。人が少ない朝が写真撮影のベストタイム。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">08:00</span>
-        <span class="tl-icon">🦞</span>
-        <span class="tl-name">小樽三角市場・海鮮朝食</span>
-        <div class="tl-tags"><span class="tag tag-food">海鮮</span></div>
-      </div>
-      <div class="tl-desc">小樽の台所。朝から新鮮な海鮮丼・カニ汁が食べられる。函館朝市とはまた違う雰囲気。ウニの食べ比べも楽しめる。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://otaru-sankaku.com/" target="_blank">三角市場</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">10:00</span>
-        <span class="tl-icon">🌊</span>
-        <span class="tl-name">積丹ブルー・神威岬 絶景ドライブ</span>
-        <div class="tl-tags"><span class="tag tag-sight">絶景</span><span class="tag tag-long">60km/1h</span></div>
-      </div>
-      <div class="tl-desc">コバルトブルーの海が広がる絶景。神威岬先端まで遊歩道を歩けば大パノラマが広がる。帰りは余市でウイスキーのお土産を。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.shakotan.jp/" target="_blank">積丹観光情報</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">13:30</span>
-        <span class="tl-icon">🍜</span>
-        <span class="tl-name">小樽 ランチ（寿司 or 塩ラーメン）</span>
-        <div class="tl-tags"><span class="tag tag-food">ランチ</span></div>
-      </div>
-      <div class="tl-desc">小樽の〆は回転寿司か塩ラーメン。「なると本店」の若鶏半身揚げも外せない名物。お土産購入もここで済ませよう。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">15:00</span>
-        <span class="tl-icon">🚗</span>
-        <span class="tl-name">函館空港へ（高速道路利用）</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span><span class="tag tag-long">約320km/3h30min</span></div>
-      </div>
-      <div class="tl-desc">小樽→函館は約3時間30分。道央道・道南道経由。余裕をもって出発。SAでのソフトクリームも忘れずに。レンタカー返却・フライトは夜便を推奨。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">20:00</span>
-        <span class="tl-icon">✈️</span>
-        <span class="tl-name">函館空港 出発</span>
-        <div class="tl-tags"><span class="tag tag-move">帰宅</span></div>
-      </div>
-      <div class="tl-desc">旅の締めくくり。空港でサッポロクラシックを一杯飲んで帰ろう。お土産はチーズ・じゃがポックルが定番。冷凍ウニは保冷バッグで持ち帰り可能。</div>
-    </div>
-  </div>
-
-</div><!-- /container -->
-</div><!-- /plan-hakodate -->
-
-<!-- ============================= -->
-<!-- ===== 新千歳 IN/OUT プラン ===== -->
-<!-- ============================= -->
-<div id="plan-chitose" class="plan-section">
-<div class="container">
-
-  <div class="section-header">
-    <h2>🛫 新千歳IN/OUTプラン</h2>
-    <p>LCCが安い！札幌・小樽・積丹を小樽2泊でゆっくり楽しむ疲れにくいプラン</p>
-  </div>
-
-  <div class="flight-panel">
-    <h3>✈️ フライト情報（新千歳）</h3>
-    <div class="flight-grid">
-      <div class="flight-card">
-        <div class="route">🛫 羽田 → 新千歳</div>
-        <div class="price">¥9,000〜 往復</div>
-        <div class="airline">ANA / JAL / Peach / Jetstar</div>
-        <a class="btn-link" href="https://www.flypeach.com/" target="_blank">Peach予約</a>
-      </div>
-      <div class="flight-card">
-        <div class="route">🛫 中部 → 新千歳</div>
-        <div class="price">¥12,000〜 往復</div>
-        <div class="airline">ANA / Peach / Jetstar</div>
-        <a class="btn-link" href="https://www.jetstar.com/jp/" target="_blank">Jetstar予約</a>
-      </div>
-    </div>
-    <p style="font-size:.78rem;color:var(--muted);margin-top:12px">💡 函館プランより片道¥5,000〜¥11,000お得。4人なら往復で¥4万以上節約できることも！</p>
-    <p style="font-size:.78rem;color:var(--muted);margin-top:4px">⚠️ 乗り捨てレンタカー追加料金（¥5,000〜¥15,000）に注意。新千歳IN→函館OUTルートも可。</p>
-  </div>
+<!-- DAYS -->
+<section class="days-section">
 
   <!-- DAY 1 -->
-  <div class="day-label">
-    <div class="day-num">D1</div>
-    <div>
-      <div class="day-title">新千歳→札幌→小樽 海鮮上陸</div>
-      <div class="day-date">7月24日（金）</div>
+  <div class="day-block">
+    <div class="day-header-row">
+      <div class="day-badge d1"><span class="num">01</span><span class="word">THU</span></div>
+      <div class="day-title"><h2>到着🛬 合流🤝 夜景🌃 居酒屋🍺</h2><p class="ddate">7月24日（木）</p></div>
     </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">10:00</span>
-        <span class="tl-icon">✈️</span>
-        <span class="tl-name">新千歳空港 到着・レンタカーPU</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span></div>
+    <div class="events">
+
+      <div class="ecard c-flight">
+        <div class="ecard-icon">🚌</div>
+        <div class="ecard-body">
+          <p class="ecard-time">午前 出発</p>
+          <p class="ecard-name">秦野 → 羽田空港 <span class="tag flight">移動</span></p>
+          <p class="ecard-note">14:40発なので <strong>12:00〜12:30には羽田着</strong> が目安。東名秦野バス停 10:21発（約90分・¥1,600）。</p>
+        </div>
       </div>
-      <div class="tl-desc">新千歳空港でレンタカーをピックアップ。空港内のラーメン道場で早速北海道ラーメンを味わうのもあり。旅のスタートダッシュ。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://rent.toyota.co.jp/" target="_blank">トヨタレンタカー</a>
+
+      <div class="ecard c-flight hi">
+        <div class="ecard-icon">✈️</div>
+        <div class="ecard-body">
+          <p class="ecard-time">14:40→16:00 ／ 友達：16:05→17:35</p>
+          <p class="ecard-name">それぞれ函館へ！空港で合流 <span class="tag flight">フライト</span></p>
+          <p class="ecard-note">自分が16:00着、友達が17:35着。<strong>空港で友達を待って一緒にバスで函館駅へ</strong>（約20分・¥510）。</p>
+        </div>
       </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">11:00</span>
-        <span class="tl-icon">🍜</span>
-        <span class="tl-name">新千歳空港内 ラーメン道場</span>
-        <div class="tl-tags"><span class="tag tag-food">ラーメン</span></div>
+
+      <div class="ecard c-hotel">
+        <div class="ecard-icon">🏨</div>
+        <div class="ecard-body">
+          <p class="ecard-time">18:00〜18:30</p>
+          <p class="ecard-name">ホテルチェックイン <span class="tag hotel">宿泊</span></p>
+          <p class="ecard-note">荷物を置いてさっそく出発！</p>
+        </div>
       </div>
-      <div class="tl-desc">空港3Fの「北海道ラーメン道場」には道内10店舗以上が集結。到着直後からすぐ食べられる贅沢な体験。味噌・醤油・塩をはしご食いしたい人向け。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">13:00</span>
-        <span class="tl-icon">🏙️</span>
-        <span class="tl-name">札幌 大通公園・時計台</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span><span class="tag tag-short">50km/40min</span></div>
+
+      <div class="ecard c-food hi">
+        <div class="ecard-icon">🍔</div>
+        <div class="ecard-body">
+          <p class="ecard-time">18:30〜19:30</p>
+          <p class="ecard-name">ラッキーピエロ 函館駅前店 <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">函館のソウルフード！チャイニーズチキンバーガー必食🍗 ⚠️ <strong>現金のみ</strong>・〜22時営業。</p>
+          <a class="ecard-link" href="https://luckypierrot.jp/shop/hakodatest/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-      <div class="tl-desc">北海道の中心都市・札幌の定番観光地。7月はビアガーデン開催中。大通公園のビアホールで昼からビールも北海道スタイル。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">15:30</span>
-        <span class="tl-icon">🚗</span>
-        <span class="tl-name">札幌→小樽 移動</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span><span class="tag tag-short">40km/40min</span></div>
+
+      <div class="ecard c-sight hi">
+        <div class="ecard-icon">🌃</div>
+        <div class="ecard-body">
+          <p class="ecard-time">20:00〜21:00</p>
+          <p class="ecard-name">函館山展望台 夜景！ <span class="tag sight">観光</span></p>
+          <p class="ecard-note">世界三大夜景✨ ロープウェイ往復¥1,500。<strong>最終20:50発なので20:30には麓へ</strong>。到着日の夜景は格別！</p>
+          <a class="ecard-link" href="https://334.co.jp/" target="_blank" rel="noopener">ロープウェイ公式</a>
+        </div>
       </div>
-      <div class="tl-desc">高速で約40分。車窓から日本海が見えてくると気分が上がる。小樽IC近くにガソリンスタンドあり。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">16:30</span>
-        <span class="tl-icon">🏮</span>
-        <span class="tl-name">小樽運河・堺町通り散策</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span></div>
+
+      <div class="ecard c-food">
+        <div class="ecard-icon">🍺</div>
+        <div class="ecard-body">
+          <p class="ecard-time">21:30〜</p>
+          <p class="ecard-name">函館駅周辺の居酒屋で乾杯🍻 <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">夜景のあとは駅周辺の海鮮居酒屋へ。活イカ・ホタテバター・北海道の地酒で旅の始まりを2人で乾杯！🦑</p>
+        </div>
       </div>
-      <div class="tl-desc">ガス灯と石造倉庫が立ち並ぶロマンチックな運河。夕刻がとくに美しい。LeTAOのチーズケーキは絶対買いたい定番みやげ。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.letao.jp/" target="_blank">LeTAO</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">18:30</span>
-        <span class="tl-icon">🦞</span>
-        <span class="tl-name">小樽 海鮮ディナー（寿司 or 海鮮丼）</span>
-        <div class="tl-tags"><span class="tag tag-food">海鮮</span></div>
-      </div>
-      <div class="tl-desc">小樽の海鮮は函館に負けず劣らず。「魚真寿司」「桂苑」などが人気。ウニ・イクラ・ボタンエビをたっぷり。夕方は比較的並びやすい。</div>
+
     </div>
   </div>
 
-  <div class="hotel-section">
-    <h3>🏨 Day1宿泊：小樽おすすめホテル</h3>
-    <div class="hotel-list">
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★★</div>
-          <div class="hotel-name">小樽グランドホテルクラシック</div>
-          <div class="hotel-desc">小樽運河徒歩3分。クラシカルな内装が素敵。温泉大浴場あり</div>
-        </div>
-        <div class="hotel-price">¥18,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★</div>
-          <div class="hotel-name">ドーミーイン小樽</div>
-          <div class="hotel-desc">小樽駅徒歩5分。天然温泉・夜鳴きそばサービスで大人気。コスパ最高</div>
-        </div>
-        <div class="hotel-price">¥11,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★</div>
-          <div class="hotel-name">ホテルソニア小樽</div>
-          <div class="hotel-desc">運河沿い。コスパ重視のビジネスホテル。繁華街・三角市場まで近い</div>
-        </div>
-        <div class="hotel-price">¥8,000〜/人</div>
-      </div>
-    </div>
-  </div>
+  <div class="squiggly">〜〜〜〜〜〜〜〜</div>
 
   <!-- DAY 2 -->
-  <div class="day-label">
-    <div class="day-num">D2</div>
-    <div>
-      <div class="day-title">積丹ブルー・神威岬・余市ウイスキー</div>
-      <div class="day-date">7月25日（土）</div>
+  <div class="day-block">
+    <div class="day-header-row">
+      <div class="day-badge d2"><span class="num">02</span><span class="word">FRI</span></div>
+      <div class="day-title"><h2>朝市🦐 五稜郭⭐ 海鮮＆カレー🍛</h2><p class="ddate">7月25日（金）</p></div>
     </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">07:30</span>
-        <span class="tl-icon">🦞</span>
-        <span class="tl-name">小樽三角市場 海鮮朝食</span>
-        <div class="tl-tags"><span class="tag tag-food">海鮮</span></div>
+    <div class="events">
+
+      <div class="ecard c-food hi">
+        <div class="ecard-icon">🦐</div>
+        <div class="ecard-body">
+          <p class="ecard-time">6:30〜8:00</p>
+          <p class="ecard-name">函館朝市 えきに市場 <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">6時開場！ウニ・イクラ・ホタテの海鮮丼を朝イチで🍚 〜14時営業。鮮度が命なので早めに！</p>
+          <a class="ecard-link" href="https://asaichi-ekini.com/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-      <div class="tl-desc">朝7時から開いている活気ある市場。新鮮な海鮮を丼でいただく。店のおじさんと話しながら選ぶのが楽しい。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://otaru-sankaku.com/" target="_blank">三角市場</a>
+
+      <div class="ecard c-sight hi">
+        <div class="ecard-icon">⭐</div>
+        <div class="ecard-body">
+          <p class="ecard-time">10:00〜12:00</p>
+          <p class="ecard-name">五稜郭タワー ＋ 五稜郭公園 <span class="tag sight">観光</span></p>
+          <p class="ecard-note">高さ107mから星形城郭を一望👀 入場¥1,200。9〜18時営業。公園内も散策してのんびり。</p>
+          <a class="ecard-link" href="https://www.goryokaku-tower.co.jp/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">09:00</span>
-        <span class="tl-icon">🌊</span>
-        <span class="tl-name">積丹ブルー・島武意海岸</span>
-        <div class="tl-tags"><span class="tag tag-sight">絶景</span><span class="tag tag-short">60km/1h</span></div>
+
+      <div class="ecard c-curry hi">
+        <div class="ecard-icon">🍛</div>
+        <div class="ecard-body">
+          <p class="ecard-time">13:00〜14:00</p>
+          <p class="ecard-name">スープカレー ベギラマ <span class="tag curry">カレー</span></p>
+          <p class="ecard-note">函館駅近のおしゃれスープカレー専門店🌶 豚骨ベーススープにゴロゴロ野菜。<strong>人気No.1はチキンレッグカレー</strong>、十五穀米も◎ 辛さ6段階。¥1,000〜1,999。</p>
+          <a class="ecard-link" href="https://begirama.com/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-      <div class="tl-desc">北海道屈指のコバルトブルーの海。島武意海岸はトンネルを抜けると突然現れる絶景スポット。ここでしか食べられない積丹ウニ丼は夏限定の贅沢。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.shakotan.jp/" target="_blank">積丹町観光</a>
+
+      <div class="ecard c-food hi">
+        <div class="ecard-icon">🦀</div>
+        <div class="ecard-body">
+          <p class="ecard-time">18:00〜19:30</p>
+          <p class="ecard-name">函太郎 五稜郭店（回転寿司） <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">北海道直送ネタの回転寿司🍣 ウニ・ホタテ・毛ガニなど地物が揃う。夜も営業、地元民にも大人気。</p>
+          <a class="ecard-link" href="https://www.kantaro.jp/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">11:00</span>
-        <span class="tl-icon">🦔</span>
-        <span class="tl-name">積丹ウニ丼（夏季限定）</span>
-        <div class="tl-tags"><span class="tag tag-food">ウニ</span></div>
-      </div>
-      <div class="tl-desc">7月は積丹ウニのベストシーズン。ミョウバンなしの生ウニは甘さが段違い。「みさき」「中村屋」「食堂うしお」などの名店で。開店前から並ぶ価値あり。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">13:30</span>
-        <span class="tl-icon">🌊</span>
-        <span class="tl-name">神威岬 遊歩道ウォーク</span>
-        <div class="tl-tags"><span class="tag tag-sight">絶景</span></div>
-      </div>
-      <div class="tl-desc">断崖絶壁の遊歩道を歩いて岬先端へ。往復約40分。眼下に広がるコバルトブルーの海が圧巻。風が強い日は足元注意。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">15:30</span>
-        <span class="tl-icon">🥃</span>
-        <span class="tl-name">余市 ニッカウヰスキー蒸留所見学</span>
-        <div class="tl-tags"><span class="tag tag-sight">体験</span></div>
-      </div>
-      <div class="tl-desc">NHK朝ドラ「マッサン」の舞台。無料見学ツアーあり（要予約）。蒸留所内のショップでしか買えないウイスキーがお土産に人気。試飲もできる。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.nikka.com/distilleries/yoichi/" target="_blank">ニッカ余市蒸留所</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">18:00</span>
-        <span class="tl-icon">🐑</span>
-        <span class="tl-name">ジンギスカン（小樽・余市近郊）</span>
-        <div class="tl-tags"><span class="tag tag-food">ジンギスカン</span></div>
-      </div>
-      <div class="tl-desc">積丹ドライブの締めはジンギスカン！小樽・余市周辺の老舗で生ラムをがっつり。旅でのジンギスカンは今日だけなので全力で楽しもう。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">21:00</span>
-        <span class="tl-icon">🍦</span>
-        <span class="tl-name">小樽 締めパフェ or ソフトクリーム</span>
-        <div class="tl-tags"><span class="tag tag-food">スイーツ</span></div>
-      </div>
-      <div class="tl-desc">小樽にも締めパフェ文化が浸透。LeTAOや地元カフェのパフェで一日を締める。明日の積丹温泉に備えて早めに就寝も◎。</div>
+
     </div>
   </div>
 
-  <div class="hotel-section">
-    <h3>🏨 Day2宿泊：小樽（連泊）</h3>
-    <div class="hotel-list">
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★</div>
-          <div class="hotel-name">ドーミーイン小樽（連泊）</div>
-          <div class="hotel-desc">連泊が楽でコスパ最高。天然温泉で積丹ドライブの疲れを癒やせる</div>
-        </div>
-        <div class="hotel-price">¥11,000〜/人</div>
-      </div>
-    </div>
-  </div>
+  <div class="squiggly">〜〜〜〜〜〜〜〜</div>
 
   <!-- DAY 3 -->
-  <div class="day-label">
-    <div class="day-num">D3</div>
-    <div>
-      <div class="day-title">小樽→札幌グルメ三昧→函館（オプション）</div>
-      <div class="day-date">7月26日（日）</div>
+  <div class="day-block">
+    <div class="day-header-row">
+      <div class="day-badge d3"><span class="num">03</span><span class="word">SAT</span></div>
+      <div class="day-title"><h2>元町カフェ☕ 海鮮食べ歩き🐟 お土産🧳</h2><p class="ddate">7月26日（土）</p></div>
     </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">09:00</span>
-        <span class="tl-icon">🏙️</span>
-        <span class="tl-name">札幌 羊ヶ丘展望台</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span><span class="tag tag-short">40km/40min</span></div>
+    <div class="events">
+
+      <div class="ecard c-cafe hi">
+        <div class="ecard-icon">🏠</div>
+        <div class="ecard-body">
+          <p class="ecard-time">9:00〜10:00</p>
+          <p class="ecard-name">café Märin <span class="tag cafe">カフェ</span></p>
+          <p class="ecard-note">評価4.9★の超人気店！1917年築の古民家カフェ。土曜OK（火曜定休）。</p>
+          <div class="ecard-dessert"><strong>おすすめ</strong>：ふわとろフレンチトースト、季節のチーズケーキ、抹茶ラテ。甘さ控えめで上品な味わい。</div>
+          <a class="ecard-link" href="https://www.instagram.com/magin_cafe/" target="_blank" rel="noopener">Instagram</a>
+        </div>
       </div>
-      <div class="tl-desc">「少年よ大志を抱け」のクラーク像で有名。広大な牧草地に羊が放牧される北海道らしい絶景。早朝は空いていてゆっくり楽しめる。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.hitsujigaoka.jp/" target="_blank">羊ヶ丘展望台</a>
+
+      <div class="ecard c-cafe">
+        <div class="ecard-icon">🍓</div>
+        <div class="ecard-body">
+          <p class="ecard-time">10:30〜11:30</p>
+          <p class="ecard-name">Café D'ici <span class="tag cafe">カフェ</span></p>
+          <p class="ecard-note">元町のおしゃれカフェ。土曜OK（水・木定休）。</p>
+          <div class="ecard-dessert"><strong>おすすめ</strong>：旬のフルーツタルト（クランベリーソース入りで甘酸っぱい！）、レモンチーズケーキ。季節限定も必見📸</div>
+          <a class="ecard-link" href="http://cafe-dici.jugem.jp/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">11:00</span>
-        <span class="tl-icon">🍛</span>
-        <span class="tl-name">スープカレー (GARAKU / 奥芝商店)</span>
-        <div class="tl-tags"><span class="tag tag-food">スープカレー</span></div>
+
+      <div class="ecard c-food hi">
+        <div class="ecard-icon">🐡</div>
+        <div class="ecard-body">
+          <p class="ecard-time">12:00〜13:30</p>
+          <p class="ecard-name">函館朝市 どんぶり横丁（昼の海鮮丼） <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">〜15時営業。ウニイクラ丼・海鮮五目丼など北海道の恵みをたっぷり🍚 朝市より落ち着いてゆっくり食べられる。</p>
+          <a class="ecard-link" href="http://donburiyokocho.com/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-      <div class="tl-desc">札幌でスープカレーを外すと一生後悔する。チキン・豚角煮・シーフードなど具材が豊富。辛さは10〜30番が初心者向け。事前予約で並ばずに入れる。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://garaku.jp/" target="_blank">GARAKU</a>
-        <a class="tl-link" href="https://okushiba.com/" target="_blank">奥芝商店</a>
+
+      <div class="ecard c-food">
+        <div class="ecard-icon">🦑</div>
+        <div class="ecard-body">
+          <p class="ecard-time">14:00〜16:00</p>
+          <p class="ecard-name">元町〜ベイエリア 食べ歩き <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">ハチマン坂を歩きながら食べ歩き🚶 函館の塩アイス、海鮮串、イカ焼きなど港町ならではのB級グルメを満喫。</p>
+        </div>
       </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">13:30</span>
-        <span class="tl-icon">🏬</span>
-        <span class="tl-name">札幌大通公園・赤れんが テラス</span>
-        <div class="tl-tags"><span class="tag tag-sight">散策</span></div>
+
+      <div class="ecard c-sight">
+        <div class="ecard-icon">🧳</div>
+        <div class="ecard-body">
+          <p class="ecard-time">16:00〜17:30</p>
+          <p class="ecard-name">金森赤レンガ倉庫 お土産まとめ買い🎁 <span class="tag sight">観光</span></p>
+          <p class="ecard-note">旅のお土産はここで全部まとめて！いくら醤油漬け・塩辛・ホタテ貝柱・北海道チーズ。保冷バッグを持参すると安心🧊</p>
+          <a class="ecard-link" href="https://www.hakodate-kanemori.com/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
       </div>
-      <div class="tl-desc">7月の大通公園はビアガーデン開催中。サッポロビールの生を外で飲む最高体験。テレビ塔から公園を眺めるのもおすすめ。お土産ショッピングもこのエリアで。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">15:30</span>
-        <span class="tl-icon">⭐</span>
-        <span class="tl-name">五稜郭見学（函館への日帰りオプション）</span>
-        <div class="tl-tags"><span class="tag tag-sight">観光</span><span class="tag tag-long">札幌〜函館 約320km</span></div>
+
+      <div class="ecard c-food hi">
+        <div class="ecard-icon">🦪</div>
+        <div class="ecard-body">
+          <p class="ecard-time">18:30〜20:30</p>
+          <p class="ecard-name">最終夜：海鮮居酒屋でガッツリ🍻 <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">活イカ刺し・ホタテバター・毛ガニ・北海道の地酒でワイワイ🍶 ベイエリア〜函館駅周辺に海鮮居酒屋が多い。明日で解散なので飲み倒そう！</p>
+        </div>
       </div>
-      <div class="tl-desc">千歳プランでも五稜郭は見たい！新幹線（新函館北斗まで約2時間）か高速バスで日帰り可能。レンタカーは札幌に置いてJR利用がラク。翌日戻りでも◎。</div>
-      <div class="tl-links">
-        <a class="tl-link" href="https://www.goryokaku-tower.co.jp/" target="_blank">五稜郭タワー</a>
-        <a class="tl-link" href="https://www.jrhokkaido.co.jp/" target="_blank">JR北海道</a>
-      </div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">19:00</span>
-        <span class="tl-icon">🍜</span>
-        <span class="tl-name">札幌ラーメン横丁（すすきの）</span>
-        <div class="tl-tags"><span class="tag tag-food">ラーメン</span></div>
-      </div>
-      <div class="tl-desc">すすきのの「ラーメン横丁」は17店舗が集結。味噌・醤油・塩の食べ比べが楽しい。深夜まで営業しているので帰り前に立ち寄れる。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">21:30</span>
-        <span class="tl-icon">🍺</span>
-        <span class="tl-name">すすきの 締めパフェ</span>
-        <div class="tl-tags"><span class="tag tag-food">スイーツ</span></div>
-      </div>
-      <div class="tl-desc">北海道名物「締めパフェ」文化の発祥の地・すすきの。「HOKKAIDO PARFAIT YOSHIMI」「natu」などが人気。深夜まで営業。</div>
+
     </div>
   </div>
 
-  <div class="hotel-section">
-    <h3>🏨 Day3宿泊：札幌おすすめホテル</h3>
-    <div class="hotel-list">
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★★</div>
-          <div class="hotel-name">JRタワーホテル日航札幌</div>
-          <div class="hotel-desc">札幌駅直結の最高ロケーション。35〜37Fからの夜景が圧巻</div>
-        </div>
-        <div class="hotel-price">¥20,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★★</div>
-          <div class="hotel-name">ホテルグレイスリー札幌</div>
-          <div class="hotel-desc">すすきの直結。ゴジラルームが話題。アクセス最高</div>
-        </div>
-        <div class="hotel-price">¥13,000〜/人</div>
-      </div>
-      <div class="hotel-item">
-        <div class="hotel-info">
-          <div class="hotel-stars">★★★</div>
-          <div class="hotel-name">ドーミーイン札幌</div>
-          <div class="hotel-desc">大浴場・夜鳴きそばで有名。コスパ◎。旅の疲れを癒やす</div>
-        </div>
-        <div class="hotel-price">¥9,000〜/人</div>
-      </div>
-    </div>
-  </div>
+  <div class="squiggly">〜〜〜〜〜〜〜〜</div>
 
   <!-- DAY 4 -->
-  <div class="day-label">
-    <div class="day-num">D4</div>
-    <div>
-      <div class="day-title">新千歳空港で最後の爆食い→帰宅</div>
-      <div class="day-date">7月27日（月）</div>
+  <div class="day-block">
+    <div class="day-header-row">
+      <div class="day-badge d4"><span class="num">04</span><span class="word">SUN</span></div>
+      <div class="day-title"><h2>最終朝市🌅 お見送り👋 帰路✈️</h2><p class="ddate">7月27日（日）</p></div>
     </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">09:00</span>
-        <span class="tl-icon">🍜</span>
-        <span class="tl-name">札幌 味噌ラーメン（朝食）</span>
-        <div class="tl-tags"><span class="tag tag-food">ラーメン</span></div>
-      </div>
-      <div class="tl-desc">最終日の朝は札幌味噌ラーメンで。「えびそば一幻」「山岡家」など朝営業の店も多い。バターコーンでリッチな一杯を。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">11:00</span>
-        <span class="tl-icon">🚗</span>
-        <span class="tl-name">新千歳空港 レンタカー返却</span>
-        <div class="tl-tags"><span class="tag tag-move">移動</span><span class="tag tag-short">50km/40min</span></div>
-      </div>
-      <div class="tl-desc">出発2〜3時間前にはレンタカーを返却。新千歳空港は広いのでチェックインと手荷物預けに時間がかかることも。余裕を持って行動しよう。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">12:00</span>
-        <span class="tl-icon">🦞</span>
-        <span class="tl-name">新千歳空港 北海道グルメ爆食い</span>
-        <div class="tl-tags"><span class="tag tag-food">空港グルメ</span></div>
-      </div>
-      <div class="tl-desc">新千歳空港はグルメ天国。ラーメン道場・回転寿司・スイーツ・お土産が充実。フライト前の最後の爆食いタイム。「花畑牧場」「ロイズ」の限定品はここでしか買えない。</div>
-    </div>
-    <div class="tl-item">
-      <div class="tl-top">
-        <span class="tl-time">14:00</span>
-        <span class="tl-icon">✈️</span>
-        <span class="tl-name">新千歳空港 出発</span>
-        <div class="tl-tags"><span class="tag tag-move">帰宅</span></div>
-      </div>
-      <div class="tl-desc">お腹いっぱいの状態で帰宅の途へ。帰りの機内でもじゃがポックルをつまみながら余韻を楽しもう。また来るぞ北海道！</div>
-    </div>
-  </div>
+    <div class="events">
 
-</div><!-- /container -->
-</div><!-- /plan-chitose -->
-
-<!-- ============================= -->
-<!-- ===== 比較プラン ===== -->
-<!-- ============================= -->
-<div id="plan-compare" class="plan-section">
-<div class="container">
-  <div class="section-header">
-    <h2>⚖️ プラン徹底比較</h2>
-    <p>費用・観光地・利便性を整理して最適プランを選ぼう</p>
-  </div>
-
-  <div class="compare-grid">
-    <div class="compare-card">
-      <h3>✈️ 函館IN/OUTプラン</h3>
-      <div class="compare-row"><span class="label">🛫 フライト（羽田発）</span><span class="val">¥18,000〜</span></div>
-      <div class="compare-row"><span class="label">🛫 フライト（中部発）</span><span class="val">¥23,000〜</span></div>
-      <div class="compare-row"><span class="label">🚗 レンタカー</span><span class="val">¥25,000〜3泊</span></div>
-      <div class="compare-row"><span class="label">⭐ 五稜郭</span><span class="val">✅ 含む</span></div>
-      <div class="compare-row"><span class="label">🌃 函館夜景</span><span class="val">✅ 含む</span></div>
-      <div class="compare-row"><span class="label">🦞 海鮮朝市</span><span class="val">✅ 函館朝市</span></div>
-      <div class="compare-row"><span class="label">🌊 積丹ブルー</span><span class="val">✅ 最終日</span></div>
-      <div class="compare-row"><span class="label">🚗 総走行距離</span><span class="val">約800km</span></div>
-      <div class="compare-row"><span class="label">💰 概算総費用/人</span><span class="val">¥65,000〜90,000</span></div>
-    </div>
-    <div class="compare-card">
-      <h3>🛫 新千歳IN/OUTプラン</h3>
-      <div class="compare-row"><span class="label">🛫 フライト（羽田発）</span><span class="val">¥9,000〜</span></div>
-      <div class="compare-row"><span class="label">🛫 フライト（中部発）</span><span class="val">¥12,000〜</span></div>
-      <div class="compare-row"><span class="label">🚗 レンタカー</span><span class="val">¥20,000〜3泊</span></div>
-      <div class="compare-row"><span class="label">⭐ 五稜郭</span><span class="val">🔶 JRで日帰り</span></div>
-      <div class="compare-row"><span class="label">🌃 函館夜景</span><span class="val">🔶 日帰り時に可</span></div>
-      <div class="compare-row"><span class="label">🦞 海鮮朝市</span><span class="val">✅ 小樽三角市場</span></div>
-      <div class="compare-row"><span class="label">🌊 積丹ブルー</span><span class="val">✅ Day2メイン</span></div>
-      <div class="compare-row"><span class="label">🚗 総走行距離</span><span class="val">約450km</span></div>
-      <div class="compare-row"><span class="label">💰 概算総費用/人</span><span class="val">¥50,000〜70,000</span></div>
-    </div>
-  </div>
-
-  <div class="verdict">
-    <h3>🏆 総合おすすめ</h3>
-    <p>
-      <strong>コスト重視なら → 新千歳プラン</strong>（フライト代が¥9,000〜と格安。走行距離も少なくドライバーの負担も小さい）<br>
-      <strong>王道北海道を満喫 → 函館プラン</strong>（夜景・朝市・五稜郭・洞爺湖・積丹を全制覇。北海道グルメ旅の完全版）<br>
-      <strong>折衷案 → 新千歳IN・函館OUT</strong>（安いLCCで入り、五稜郭・夜景も楽しんで函館から帰宅。乗り捨て料金に注意）
-    </p>
-  </div>
-
-  <table class="cost-table">
-    <thead>
-      <tr>
-        <th>費目</th>
-        <th>函館プラン/人</th>
-        <th>新千歳プラン/人</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>✈️ 航空券（羽田）</td><td>¥18,000〜</td><td>¥9,000〜</td></tr>
-      <tr><td>✈️ 航空券（中部）</td><td>¥23,000〜</td><td>¥12,000〜</td></tr>
-      <tr><td>🚗 レンタカー（割り勘）</td><td>¥6,000〜/人</td><td>¥5,000〜/人</td></tr>
-      <tr><td>⛽ ガソリン代</td><td>¥4,000〜/人</td><td>¥2,500〜/人</td></tr>
-      <tr><td>🏨 宿泊3泊</td><td>¥25,000〜40,000</td><td>¥25,000〜40,000</td></tr>
-      <tr><td>🍽️ 食費（3泊4日）</td><td>¥20,000〜30,000</td><td>¥20,000〜30,000</td></tr>
-      <tr><td>🎡 観光費</td><td>¥3,000〜5,000</td><td>¥2,000〜4,000</td></tr>
-      <tr><td>🎁 お土産</td><td>¥5,000〜10,000</td><td>¥5,000〜10,000</td></tr>
-      <tr><td>💰 合計（概算）</td><td>¥65,000〜90,000</td><td>¥50,000〜70,000</td></tr>
-    </tbody>
-  </table>
-
-  <div style="background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:24px">
-    <p style="font-size:.82rem;color:var(--muted);line-height:1.8">
-      ⚠️ <strong>新千歳プランの乗り捨て注意：</strong>新千歳IN→函館OUTの場合、レンタカー乗り捨て料金（¥5,000〜¥15,000）が追加。2人なら+¥2,500〜¥7,500/人。<br>
-      💡 <strong>早割の効果：</strong>フライトは3ヶ月前予約で30〜50%割引。トータルで¥10,000以上節約できることも。<br>
-      🔗 <a href="https://travel.rakuten.co.jp/" target="_blank" style="color:var(--primary)">楽天トラベルで一括比較</a>　
-      <a href="https://www.jalan.net/" target="_blank" style="color:var(--primary)">じゃらんで検索</a>　
-      <a href="https://www.rentalcar.jp/" target="_blank" style="color:var(--primary)">レンタカー比較</a>
-    </p>
-  </div>
-</div>
-</div><!-- /plan-compare -->
-
-<!-- ============================= -->
-<!-- ===== NEW IDEAS SECTION ===== -->
-<!-- ============================= -->
-<div class="ideas-section">
-  <div class="container">
-    <h2>💡 追加アイデア ～旅をもっと楽しむ工夫～</h2>
-    <div class="ideas-grid">
-      <div class="idea-card">
-        <div class="idea-icon">🎫</div>
-        <div class="idea-title">デジタル旅行スクラップブック</div>
-        <div class="idea-desc">Notionや食べログで行ったお店を記録。写真・値段・感想を残すと旅の記憶が永遠に残る。SNS投稿もしやすくなる。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🍽️</div>
-        <div class="idea-title">食べたもの総コスト計算</div>
-        <div class="idea-desc">旅中にSplitwise等を使って食費をシェア。誰が何を払ったか記録しておくと後精算がスムーズ。グルメ旅は食費が大きいので必須。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🌅</div>
-        <div class="idea-title">早朝ドライブで穴場発掘</div>
-        <div class="idea-desc">北海道の早朝6〜8時は観光客が少なく絶景独り占め。朝市・運河・岬など人気スポットこそ早起きして訪問しよう。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">📦</div>
-        <div class="idea-title">お土産を自宅に発送</div>
-        <div class="idea-desc">カニ・メロン・ウニなどかさばる生鮮品は現地ヤマト運輸で発送が楽。空港のレートより市内の方が安い。帰りの荷物も軽くなる。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🎲</div>
-        <div class="idea-title">「今日のランチ」くじ引き</div>
-        <div class="idea-desc">行きたいお店を全部書いて当日くじ引きで決めるゲーム方式。旅のサプライズ感が増し、全員が楽しめる意思決定法。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🎵</div>
-        <div class="idea-title">ドライブBGMプレイリスト</div>
-        <div class="idea-desc">出発前に北海道グルメ旅専用Spotifyプレイリストを作成。積丹ブルーを見ながら爽快な音楽を聴く体験は最高の思い出になる。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🔔</div>
-        <div class="idea-title">航空券価格アラート設定</div>
-        <div class="idea-desc">Googleフライトで価格アラートを設定しておくと最安値で購入できる。3〜4ヶ月前が最も下がりやすいタイミング。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🌡️</div>
-        <div class="idea-title">7月の北海道気候対策</div>
-        <div class="idea-desc">本州より20℃近く涼しいが積丹・函館山は強風。薄手の防風ジャケット必須。虫除けスプレーと日焼け止めも忘れずに。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">🏆</div>
-        <div class="idea-title">グルメスタンプラリー</div>
-        <div class="idea-desc">海鮮丼・ラーメン・スープカレー・ジンギスカン・ソフトクリームの5種制覇でSNSに投稿！旅のミッションがあると燃える。</div>
-      </div>
-      <div class="idea-card">
-        <div class="idea-icon">💊</div>
-        <div class="idea-title">胃腸薬を持参する</div>
-        <div class="idea-desc">食べ過ぎ必至のグルメ旅。正露丸・ガスター10・アリナミンを事前準備。体調管理もグルメ旅の大事な準備。</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TIPS ===== -->
-<div class="container">
-  <div class="section-header">
-    <h2>📌 旅のTips &amp; 注意事項</h2>
-  </div>
-  <div class="tips-grid">
-    <div class="tip-card">
-      <div class="tip-icon">🦔</div>
-      <div class="tip-title">ウニ丼は早い者勝ち</div>
-      <div class="tip-body">人気店は開店前から行列。積丹・函館ともに朝8時〜10時が勝負。昼過ぎには売り切れる店も多い</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🍜</div>
-      <div class="tip-title">ラーメン横丁は深夜まで営業</div>
-      <div class="tip-body">函館・札幌ともにラーメン店は22時〜翌2時まで営業している店多数。「締めラーメン」文化を体験しよう</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🍛</div>
-      <div class="tip-title">スープカレーは予約必須</div>
-      <div class="tip-body">GARUKUなど人気店は平日でも30分〜1時間待ち。食べログ・公式サイトで事前予約を強く推奨</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🚗</div>
-      <div class="tip-title">レンタカーは今すぐ予約</div>
-      <div class="tip-body">7月は繁忙期で台数が少ない。3〜4ヶ月前の予約が安心。コンパクトカーでも4人なら十分。ETC必携</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">💴</div>
-      <div class="tip-title">現金も用意しておく</div>
-      <div class="tip-body">朝市・地方の食堂・農産物直売所は現金のみが多い。1万円以上の現金を財布に確保しておこう</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">🧥</div>
-      <div class="tip-title">7月でも防寒具は必要</div>
-      <div class="tip-body">函館山・神威岬は風が強く肌寒い。薄手のウィンドブレーカーを1枚カバンに入れておくと安心</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">📦</div>
-      <div class="tip-title">お土産は早めに発送</div>
-      <div class="tip-body">生鮮品（カニ・メロン）はクール便で自宅発送が便利。空港の発送サービスより市内の方が安い場合も</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-icon">📱</div>
-      <div class="tip-title">Google Maps オフライン地図</div>
-      <div class="tip-body">積丹半島など電波が弱いエリアもある。出発前に北海道の地図をオフライン保存しておくと安心</div>
-    </div>
-  </div>
-</div>
-
-<!-- ============================= -->
-<!-- ===== MAP MODAL ===== -->
-<!-- ============================= -->
-<div id="mapModal" class="modal-overlay" onclick="handleModalClick(event)">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div>
-        <h3>🗺️ ルートマップ</h3>
-        <div class="modal-tabs">
-          <button class="modal-tab active" onclick="switchMapPlan('hakodate',this)">✈️ 函館プラン</button>
-          <button class="modal-tab" onclick="switchMapPlan('chitose',this)">🛫 新千歳プラン</button>
+      <div class="ecard c-food hi">
+        <div class="ecard-icon">🌅</div>
+        <div class="ecard-body">
+          <p class="ecard-time">6:30〜7:30</p>
+          <p class="ecard-name">函館朝市 えきに市場（最終！） <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">旅の締め朝市🍱 最後の海鮮丼 + 朝市で買える乾物・いくら醤油漬けもここで（保冷バッグ推奨）。</p>
+          <a class="ecard-link" href="https://asaichi-ekini.com/" target="_blank" rel="noopener">公式サイト</a>
         </div>
       </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="map"></div>
-      <div class="map-controls">
-        <button id="btn-play" onclick="playAnimation()">▶ 再生</button>
-        <button onclick="pauseAnimation()">⏸ 一時停止</button>
-        <button onclick="resetAnimation()">⏹ リセット</button>
-        <select onchange="setSpeed(parseInt(this.value))">
-          <option value="1">×1</option>
-          <option value="2">×2</option>
-          <option value="4" selected>×4</option>
-          <option value="8">×8</option>
-        </select>
-        <div class="progress-bar" id="progressBar" onclick="seekByClick(event)">
-          <div class="progress-fill" id="progressFill"></div>
+
+      <div class="ecard c-hotel">
+        <div class="ecard-icon">🧹</div>
+        <div class="ecard-body">
+          <p class="ecard-time">8:00〜9:00</p>
+          <p class="ecard-name">チェックアウト・荷物まとめ</p>
+          <p class="ecard-note">お土産の荷造りも忘れずに。</p>
         </div>
-        <div class="spot-label" id="spotLabel">📍 スタート地点</div>
       </div>
+
+      <div class="ecard c-food">
+        <div class="ecard-icon">🍔</div>
+        <div class="ecard-body">
+          <p class="ecard-time">9:00〜10:00</p>
+          <p class="ecard-name">ラッキーピエロ（朝食・リベンジ可） <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">駅前店は<strong>8時から営業</strong>🎉 まだ行ってない・もう一度食べたい人に！⚠️ 現金のみ。</p>
+          <a class="ecard-link" href="https://luckypierrot.jp/shop/hakodatest/" target="_blank" rel="noopener">公式サイト</a>
+        </div>
+      </div>
+
+      <div class="ecard c-flight hi">
+        <div class="ecard-icon">👋</div>
+        <div class="ecard-body">
+          <p class="ecard-time">⚠️ 11:00〜11:30 お別れ！</p>
+          <p class="ecard-name">愛知の友達 → 函館空港へ出発 <span class="tag flight">移動</span></p>
+          <p class="ecard-note">友達は<strong>13:20発なので11:30〜11:45には空港着が必要</strong>。函館駅前バスで約20分（¥510）。駅でハグしてお見送り👋</p>
+        </div>
+      </div>
+
+      <div class="ecard c-curry">
+        <div class="ecard-icon">🍜</div>
+        <div class="ecard-body">
+          <p class="ecard-time">12:00〜13:30</p>
+          <p class="ecard-name">自分だけのフリーランチ <span class="tag food">グルメ</span></p>
+          <p class="ecard-note">16:45発まで約5時間のフリー時間。<strong>自由軒（11:15〜、塩ラーメン¥660）</strong>や<strong>吉田商店（スープカレー）</strong>でゆっくり最後の函館ランチを。</p>
+          <a class="ecard-link" href="https://www.hotpepper.jp/strJ000300625/" target="_blank" rel="noopener">吉田商店（スープカレー）</a>
+        </div>
+      </div>
+
+      <div class="ecard c-flight hi">
+        <div class="ecard-icon">🚨</div>
+        <div class="ecard-body">
+          <p class="ecard-time">⚠️ 15:00〜15:30 厳守！</p>
+          <p class="ecard-name">函館空港へ移動 <span class="tag flight">移動</span></p>
+          <p class="ecard-note">函館駅前バスで約20分（¥510）。<strong>16:45発なので15:00〜15:30には空港着が必須！</strong></p>
+        </div>
+      </div>
+
+      <div class="ecard c-flight hi">
+        <div class="ecard-icon">✈️</div>
+        <div class="ecard-body">
+          <p class="ecard-time">16:45 → 18:10</p>
+          <p class="ecard-name">函館 → 羽田！おつかれさま🎉 <span class="tag flight">フライト</span></p>
+          <p class="ecard-note">¥15,410。羽田18:10着。最高の旅をありがとう〜！🦑🐟🍛</p>
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
 
-<!-- ===== FOOTER ===== -->
+</section>
+
+<!-- WARNINGS -->
+<section class="warnings-section">
+  <div class="section-heading"><span class="emoji">📌</span><h2>注意事項まとめ</h2></div>
+  <div class="warn-grid">
+    <div class="wcard"><div class="wicon">✈️</div><strong>自分の往路（確定）</strong><p>羽田14:40発→函館16:00着。12:00〜12:30に羽田着。</p></div>
+    <div class="wcard"><div class="wicon">✈️</div><strong>自分の復路（確定）</strong><p>函館16:45発→羽田18:10着。15:00〜15:30に空港着が必須！</p></div>
+    <div class="wcard"><div class="wicon">👫</div><strong>友達の往路（確定）</strong><p>名古屋16:05発→函館17:35着。空港で合流して一緒にホテルへ。</p></div>
+    <div class="wcard"><div class="wicon">👋</div><strong>友達の復路（確定）</strong><p>函館13:20発。11:30〜11:45には空港着が必要。朝市後に見送り！</p></div>
+    <div class="wcard"><div class="wicon">💴</div><strong>ラッキーピエロ</strong><p>現金のみ！事前に用意して。駅前店は8時から営業。</p></div>
+    <div class="wcard"><div class="wicon">🏨</div><strong>宿泊（要予約）</strong><p>3泊、1人部屋×2室。夏の繁忙期なので早めに！</p></div>
+  </div>
+</section>
+
 <footer>
-  <p>🦀 北海道食べ歩き旅プランナー 2026 ｜ 2026年7月24日〜27日</p>
-  <p style="margin-top:6px">情報は参考目安です。価格・営業時間は事前に公式サイトでご確認ください。</p>
-  <p style="margin-top:6px">
-    <a href="https://www.visit-hokkaido.jp/" target="_blank">北海道観光公式</a> ｜
-    <a href="https://www.hakodate-kankou.com/" target="_blank">函館観光</a> ｜
-    <a href="https://www.city.otaru.lg.jp/kanko/" target="_blank">小樽観光</a>
-  </p>
+  <div class="footer-logo">🦑 函館たびびより <span class="dot"></span></div>
+  <p>7/24 14:40発 — 7/27 16:45発 · HAKODATE 2025</p>
 </footer>
-
-<script>
-// ===== PLAN TOGGLE =====
-function switchPlan(plan, btn) {
-  document.querySelectorAll('.plan-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.plan-toggle button').forEach(b => b.classList.remove('active'));
-  document.getElementById('plan-' + plan).classList.add('active');
-  btn.classList.add('active');
-}
-
-// ===== MAP MODAL =====
-function openModal() {
-  document.getElementById('mapModal').classList.add('open');
-  if (!mapInitialized) {
-    setTimeout(() => { initMap(); mapInitialized = true; }, 100);
-  } else {
-    setTimeout(() => { map.invalidateSize(); }, 100);
-  }
-}
-function closeModal() {
-  document.getElementById('mapModal').classList.remove('open');
-  pauseAnimation();
-}
-function handleModalClick(e) {
-  if (e.target === document.getElementById('mapModal')) closeModal();
-}
-
-// ===== LEAFLET MAP =====
-let map, mapInitialized = false;
-let animPolyline, fullPolyline, planeMarker;
-let animFrame, isPlaying = false, progress = 0, speed = 4;
-let currentPlanKey = 'hakodate';
-
-const plans = {
-  hakodate: {
-    center: [42.5, 141.5], zoom: 7,
-    stops: [
-      { lat: 41.7700, lng: 140.8225, name: '函館空港', icon: '✈️', day: 'Day1', time: '08:00', desc: '出発・レンタカーPU' },
-      { lat: 41.7960, lng: 140.7560, name: '函館朝市', icon: '🦞', day: 'Day1', time: '09:00', desc: '海鮮丼でスタート' },
-      { lat: 41.7960, lng: 140.7574, name: '五稜郭タワー', icon: '⭐', day: 'Day1', time: '11:00', desc: '幕末の星形要塞' },
-      { lat: 41.7690, lng: 140.7250, name: '函館山 夜景', icon: '🌃', day: 'Day1', time: '20:00', desc: '世界三大夜景' },
-      { lat: 41.8540, lng: 140.9890, name: '大沼国定公園', icon: '🌲', day: 'Day2', time: '08:30', desc: '駒ヶ岳と湖の絶景' },
-      { lat: 41.7400, lng: 140.7200, name: '湯の川温泉', icon: '♨️', day: 'Day2', time: '14:00', desc: '旅の疲れを癒やす' },
-      { lat: 42.8320, lng: 140.7530, name: '長万部 かにめし', icon: '🦀', day: 'Day3', time: '12:30', desc: 'ドライブ途中の名物' },
-      { lat: 42.5960, lng: 140.8320, name: '洞爺湖', icon: '🌋', day: 'Day3', time: '15:00', desc: 'カルデラ湖の絶景' },
-      { lat: 43.0620, lng: 141.3540, name: '札幌 スープカレー', icon: '🍛', day: 'Day3', time: '19:00', desc: 'GARAKUで決まり' },
-      { lat: 43.1907, lng: 140.9941, name: '小樽三角市場', icon: '🦞', day: 'Day4', time: '08:00', desc: '海鮮朝食' },
-      { lat: 43.3560, lng: 140.4610, name: '神威岬（積丹）', icon: '🌊', day: 'Day4', time: '10:00', desc: '積丹ブルーの絶景' },
-      { lat: 41.7700, lng: 140.8225, name: '函館空港（帰路）', icon: '✈️', day: 'Day4', time: '20:00', desc: 'お疲れ様でした！' },
-    ]
-  },
-  chitose: {
-    center: [43.1, 141.3], zoom: 8,
-    stops: [
-      { lat: 42.7752, lng: 141.6921, name: '新千歳空港', icon: '✈️', day: 'Day1', time: '10:00', desc: '到着・レンタカーPU' },
-      { lat: 43.0620, lng: 141.3540, name: '札幌 大通公園', icon: '🏙️', day: 'Day1', time: '13:00', desc: '7月はビアガーデン開催' },
-      { lat: 43.1907, lng: 140.9941, name: '小樽運河', icon: '🏮', day: 'Day1', time: '16:30', desc: 'ガス灯と石造倉庫' },
-      { lat: 43.1907, lng: 140.9941, name: '小樽三角市場', icon: '🦞', day: 'Day2', time: '07:30', desc: '海鮮朝食' },
-      { lat: 43.3110, lng: 140.6180, name: '島武意海岸（積丹）', icon: '🌊', day: 'Day2', time: '09:00', desc: '積丹ブルーの極致' },
-      { lat: 43.3560, lng: 140.4610, name: '神威岬', icon: '🌊', day: 'Day2', time: '11:00', desc: '断崖絶壁の大パノラマ' },
-      { lat: 43.1870, lng: 140.7840, name: '余市 ニッカ蒸留所', icon: '🥃', day: 'Day2', time: '15:30', desc: '無料見学ツアー' },
-      { lat: 43.1907, lng: 140.9941, name: '小樽 ジンギスカン', icon: '🐑', day: 'Day2', time: '18:00', desc: '生ラムを豪快に' },
-      { lat: 43.0620, lng: 141.3540, name: '札幌 羊ヶ丘展望台', icon: '🏙️', day: 'Day3', time: '09:00', desc: 'クラーク像と広大な牧草地' },
-      { lat: 43.0620, lng: 141.3540, name: '札幌 スープカレー', icon: '🍛', day: 'Day3', time: '11:00', desc: 'GARAKUで予約推奨' },
-      { lat: 41.7960, lng: 140.7574, name: '五稜郭（JR日帰り）', icon: '⭐', day: 'Day3', time: '15:30', desc: '新幹線で約2時間' },
-      { lat: 42.7752, lng: 141.6921, name: '新千歳空港（帰路）', icon: '✈️', day: 'Day4', time: '14:00', desc: '爆食いして帰宅！' },
-    ]
-  }
-};
-
-function initMap() {
-  map = L.map('map', { zoomControl: true, scrollWheelZoom: true });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 18
-  }).addTo(map);
-  loadPlan('hakodate');
-}
-
-function makeIcon(emoji, size) {
-  return L.divIcon({
-    html: `<div style="font-size:${size}px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))">${emoji}</div>`,
-    className: '', iconAnchor: [size/2, size/2]
-  });
-}
-
-function loadPlan(planKey) {
-  currentPlanKey = planKey;
-  resetAnimation();
-  if (fullPolyline) map.removeLayer(fullPolyline);
-  if (animPolyline) map.removeLayer(animPolyline);
-  if (planeMarker) map.removeLayer(planeMarker);
-  map.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Polyline) map.removeLayer(l); });
-
-  const plan = plans[planKey];
-  const latlngs = plan.stops.map(s => [s.lat, s.lng]);
-
-  fullPolyline = L.polyline(latlngs, { color: '#ccc', weight: 3, dashArray: '8,6', opacity: 0.5 }).addTo(map);
-  animPolyline = L.polyline([], { color: '#e8a020', weight: 4, opacity: 0.9 }).addTo(map);
-
-  plan.stops.forEach((s, i) => {
-    const m = L.marker([s.lat, s.lng], { icon: makeIcon(s.icon, 24) }).addTo(map);
-    m.bindPopup(`<b>${s.icon} ${s.name}</b><br><small>${s.day} ${s.time}</small><br>${s.desc}`);
-  });
-
-  planeMarker = L.marker(latlngs[0], { icon: makeIcon('✈️', 28), zIndexOffset: 1000 }).addTo(map);
-  map.fitBounds(L.polyline(latlngs).getBounds(), { padding: [30, 30] });
-  document.getElementById('spotLabel').textContent = `📍 ${plan.stops[0].name}`;
-}
-
-function switchMapPlan(planKey, btn) {
-  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  loadPlan(planKey);
-}
-
-let startTime = null, elapsed = 0;
-const DURATION = 20000;
-
-function playAnimation() {
-  if (isPlaying) return;
-  isPlaying = true;
-  startTime = performance.now() - elapsed;
-  animFrame = requestAnimationFrame(tick);
-}
-function pauseAnimation() {
-  isPlaying = false;
-  if (animFrame) cancelAnimationFrame(animFrame);
-}
-function resetAnimation() {
-  pauseAnimation();
-  elapsed = 0; progress = 0;
-  updateProgress(0);
-}
-function setSpeed(s) { speed = s; }
-
-function tick(now) {
-  if (!isPlaying) return;
-  elapsed = (now - startTime) * speed;
-  progress = Math.min(elapsed / DURATION, 1);
-  updateProgress(progress);
-  if (progress < 1) animFrame = requestAnimationFrame(tick);
-  else { isPlaying = false; }
-}
-
-function updateProgress(t) {
-  const plan = plans[currentPlanKey];
-  const stops = plan.stops;
-  const latlngs = stops.map(s => [s.lat, s.lng]);
-  const n = stops.length - 1;
-  const segIdx = Math.min(Math.floor(t * n), n - 1);
-  const segT = (t * n) - segIdx;
-  const from = latlngs[segIdx];
-  const to = latlngs[segIdx + 1];
-  const lat = from[0] + (to[0] - from[0]) * segT;
-  const lng = from[1] + (to[1] - from[1]) * segT;
-
-  if (planeMarker) planeMarker.setLatLng([lat, lng]);
-
-  const traveled = latlngs.slice(0, segIdx + 1);
-  traveled.push([lat, lng]);
-  if (animPolyline) animPolyline.setLatLngs(traveled);
-
-  document.getElementById('progressFill').style.width = (t * 100) + '%';
-
-  const stopIdx = Math.round(t * n);
-  const stop = stops[Math.min(stopIdx, stops.length - 1)];
-  document.getElementById('spotLabel').textContent = `${stop.icon} ${stop.day} ${stop.time} ｜ ${stop.name}`;
-}
-
-function seekByClick(e) {
-  const bar = document.getElementById('progressBar');
-  const rect = bar.getBoundingClientRect();
-  progress = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  elapsed = progress * DURATION / speed;
-  updateProgress(progress);
-}
-</script>
 
 </body>
 </html>
